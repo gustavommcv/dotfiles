@@ -1,0 +1,71 @@
+* {
+  font-family: "JetBrains Mono Nerd Font";
+  font-weight: bold;
+  font-size: 15px;
+}
+
+window#waybar {
+  background: #121212;
+  border: 3px solid #202020;
+  border-radius: 10px;
+}
+
+#pulseaudio,
+#tray,
+#clock,
+#custom-notification {
+  color: #cdd6f4;
+  margin: 0px 15px 0px 0px;
+}
+
+#workspaces {
+  margin: 0px 15px 0px 15px;
+}
+
+#workspaces button {
+  background: transparent;
+  padding: 0.5rem 0.5rem;
+  font-weight: 900;
+  font-size: 13pt;
+  color: #313131;
+  border: none;
+  border-radius: 8px;
+}
+
+#workspaces button.active {
+  color: #cdd6f4;
+}
+
+#workspaces button:hover {
+  color: #cdd6f4;
+  box-shadow: none;
+}
+
+#window {
+  color: #cdd6f4;
+  font-family: "Martian Mono";
+}
+
+#clock {
+  color: #cdd6f4;
+  background: transparent;
+}
+
+#pulseaudio {
+  color: #b5bfe2;
+  background: transparent;
+}
+
+#mpris {
+  color: #dcdcdc;
+  animation-name: blink;
+  animation-duration: 2s;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes blink {
+  to {
+    color: #4a4a4a;
+  }
+}
