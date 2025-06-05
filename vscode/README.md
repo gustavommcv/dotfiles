@@ -151,5 +151,3 @@ This will install each extension listed in `extensions.txt` automatically.
 - Contributions and suggestions are always welcome!
 
 ---
-
-# 🌟 Enjoy your enhanced VS Code experience!
