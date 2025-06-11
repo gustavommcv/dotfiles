@@ -15,7 +15,7 @@
     // "custom/smallspacer",
     "hyprland/workspaces",
     // "custom/spacer",
-    "mpris"
+    "mpris",
   ],
 
   "modules-center": [
@@ -36,9 +36,10 @@
     // "custom/cliphist",
     "clock",
     "pulseaudio",
-    "custom/notification"
+    "custom/notification",
+    "idle_inhibitor"
     // "custom/padd"
   ],
 
-  "include": ["~/.config/waybar/modules.json"]
+  "include": ["~/.config/waybar/modules.json"],
 }

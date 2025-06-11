@@ -72,9 +72,8 @@
       "default": ""
     }
   },
-
   "clock": {
-    "format": "{:%I:%M %p}",
+    "format": "{:%A %B %d %H:%M %p}",
     "rotate": 0,
     "on-click": "/usr/local/bin/ags -t ActivityCenter",
     "tooltip-format": "<tt>{calendar}</tt>",
@@ -113,5 +112,13 @@
       "default": ["", "", ""]
     },
     "on-click": "pavucontrol"
+  },
+
+  "idle_inhibitor": {
+    "format": "{icon}",
+    "format-icons": {
+      "activated": "",
+      "deactivated": ""
+    }
   }
 }
