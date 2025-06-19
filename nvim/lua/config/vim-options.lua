@@ -9,4 +9,4 @@ vim.opt.undofile = true
 vim.opt.undodir = vim.fn.stdpath("config") .. "/undodir//"
 vim.fn.mkdir(vim.fn.stdpath("config") .. "/undodir", "p")
 
-vim.opt.number = true
+vim.opt.relativenumber = true
