@@ -1,3 +1,9 @@
+-- Completions settings
+-- cmp-nvim-lsp
+-- luasnip
+-- cmp_luasnip
+-- friendly-snippets
+-- nvim-cmp
 return {
   {
     "hrsh7th/cmp-nvim-lsp",

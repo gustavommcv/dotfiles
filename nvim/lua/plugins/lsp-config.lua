@@ -1,3 +1,7 @@
+-- LSP config
+-- mason
+-- mason-lspconfig
+-- nvim-lspconfig
 return {
   {
     "mason-org/mason.nvim",
