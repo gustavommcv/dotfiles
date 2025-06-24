@@ -8,7 +8,6 @@ Never run `chmod +x` on scripts without first:
 
 ## Permission Requirements
 ```bash
-# Grant execute permission AFTER reviewing:
 chmod +x ~/.config/hypr/scripts/*
 ```
 
@@ -31,7 +30,6 @@ https://github.com/gustavommcv/Rofi-Settings
 - swaync
 - hypridle
 - clipse
-- hyprspace (optional - inactive by default)
 - hyprshot
 - hyprlock
 - gnome-system-monitor
@@ -39,3 +37,4 @@ https://github.com/gustavommcv/Rofi-Settings
 - playerctl
 - font-awesome
 - noto-fonts-cjk
+- wttrbar
