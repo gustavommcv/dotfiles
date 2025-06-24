@@ -38,3 +38,4 @@ https://github.com/gustavommcv/Rofi-Settings
 - font-awesome
 - noto-fonts-cjk
 - wttrbar
+- nwg-dock-hyprland
