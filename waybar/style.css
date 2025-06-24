@@ -14,7 +14,8 @@ window#waybar {
 #tray,
 #clock,
 #custom-notification,
-#idle_inhibitor {
+#idle_inhibitor,
+#custom-weather {
   color: #cdd6f4;
   margin: 0px 15px 0px 0px;
 }

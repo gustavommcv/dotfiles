@@ -19,10 +19,12 @@
   ],
 
   "modules-center": [
+    "custom/weather",
+    "clock"
     // "custom/padd",
     // "custom/l_end",
     // "custom/r_end",
-    "hyprland/window"
+    // "hyprland/window"
     // "custom/padd"
   ],
 
@@ -34,7 +36,6 @@
     // "cpu",
     "tray",
     // "custom/cliphist",
-    "clock",
     "pulseaudio",
     "custom/notification",
     "idle_inhibitor"
