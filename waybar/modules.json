@@ -99,9 +99,9 @@
 
   "pulseaudio": {
     "format": "{format_source} {icon} {volume}%",
-    "format-muted": "{format_source} ",
+    "format-muted": "{format_source} <span foreground='#d22b2b'></span>",
     "format-source": "",
-    "format-source-muted": "",
+    "format-source-muted": "<span foreground='#d22b2b'> </span>",
     "format-icons": {
       "headphone": "",
       "hands-free": "",
