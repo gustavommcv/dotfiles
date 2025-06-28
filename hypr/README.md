@@ -39,4 +39,3 @@ https://github.com/gustavommcv/Rofi-Settings
 - noto-fonts-cjk
 - wttrbar
 - nwg-dock-hyprland
-- SwayOSD
