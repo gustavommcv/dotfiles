@@ -22,14 +22,15 @@ https://github.com/gustavommcv/Rofi-Settings
 - pavucontrol
 - xdg-desktop-portal-hyprland
 - wl-clipboard
+- wl-clip-persist
 - nautilus
 - kitty
 - rofi
+- wofi
 - waybar
-- hyprpaper
 - swaync
 - hypridle
-- clipse
+- cliphist
 - hyprshot
 - hyprlock
 - gnome-system-monitor
@@ -38,4 +39,3 @@ https://github.com/gustavommcv/Rofi-Settings
 - font-awesome
 - noto-fonts-cjk
 - wttrbar
-- nwg-dock-hyprland
