@@ -39,3 +39,4 @@ https://github.com/gustavommcv/Rofi-Settings
 - font-awesome
 - noto-fonts-cjk
 - wttrbar
+- greetd greetd-tuigreet
