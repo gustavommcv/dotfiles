@@ -1,4 +1,5 @@
-![image](https://github.com/user-attachments/assets/7a38bd7b-7745-42ba-b098-1b8956c6a236)
+<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/0dec9735-89b7-4842-a44b-d59c3512204d" />
+
 
 # Script Security Note
 **Always review scripts before granting execute permissions!**  
