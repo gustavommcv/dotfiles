@@ -1,0 +1,10 @@
+font-family = "JetBrainsMono Nerd Font"
+font-size = "15"
+
+background = #161616
+
+confirm-close-surface = false
+
+mouse-hide-while-typing = true
+
+resize-overlay = never
