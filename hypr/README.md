@@ -19,6 +19,7 @@ https://github.com/gustavommcv/Rofi-Settings
 
 ## My dependencies:
 - hyprland
+- hyprpolkitagent
 - pavucontrol
 - xdg-desktop-portal-hyprland
 - wl-clipboard
