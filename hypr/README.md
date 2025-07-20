@@ -1,5 +1,4 @@
-<img width="2560" height="1440" alt="image" src="https://github.com/user-attachments/assets/0dec9735-89b7-4842-a44b-d59c3512204d" />
-
+![image](https://github.com/user-attachments/assets/7a38bd7b-7745-42ba-b098-1b8956c6a236)
 
 # Script Security Note
 **Always review scripts before granting execute permissions!**  
@@ -11,6 +10,12 @@ Never run `chmod +x` on scripts without first:
 ```bash
 chmod +x ~/.config/hypr/scripts/*
 ```
+
+## Waybar settings
+https://github.com/gustavommcv/WaybarSettings-Hyprland
+
+## Rofi settings
+https://github.com/gustavommcv/Rofi-Settings
 
 ## My dependencies:
 - hyprland
@@ -26,7 +31,7 @@ chmod +x ~/.config/hypr/scripts/*
 - waybar
 - swaync
 - hypridle
-- cliphist
+- clipse
 - hyprshot
 - hyprlock
 - gnome-system-monitor
