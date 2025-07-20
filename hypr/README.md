@@ -12,12 +12,6 @@ Never run `chmod +x` on scripts without first:
 chmod +x ~/.config/hypr/scripts/*
 ```
 
-## Waybar settings
-https://github.com/gustavommcv/WaybarSettings-Hyprland
-
-## Rofi settings
-https://github.com/gustavommcv/Rofi-Settings
-
 ## My dependencies:
 - hyprland
 - hyprpolkitagent
