@@ -28,14 +28,16 @@ plugins=(
   zsh-syntax-highlighting
 )
 
-
 # ======================
-#  System Settings
+#  Aliases
 # ======================
 
-# Uncomment if experiencing paste issues
-# DISABLE_MAGIC_FUNCTIONS="true"
+# System
+alias ll="ls -la"
+alias cl="clear"
 
+# Custom
+alias spt="ncspot"
 
 # ======================
 #  Initialization
