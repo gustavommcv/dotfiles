@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/7a38bd7b-7745-42ba-b098-1b8956c6a236)
+<img width="2560" height="1440" alt="2025-07-29-111159_hyprshot" src="https://github.com/user-attachments/assets/9669ce0e-6ab8-4809-aae7-f19820dcc33e" />
 
 # Script Security Note
 **Always review scripts before granting execute permissions!**  
