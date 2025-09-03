@@ -42,8 +42,8 @@ alias gp="git push"
 alias ll="ls -la"
 alias cl="clear"
 
-# Custom
-alias spt="ncspot"
+# Tmux
+alias ta="tmux attach"
 
 # ======================
 #  Initialization
