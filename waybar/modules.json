@@ -128,5 +128,11 @@
     "interval": 3600,
     "exec": "wttrbar",
     "return-type": "json"
+  },
+
+  "hyprland/language": {
+    "format": "{}",
+    "format-en": "US",
+    "format-br": "BR"
   }
 }
