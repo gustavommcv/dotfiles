@@ -32,7 +32,7 @@ https://github.com/gustavommcv/Rofi-Settings
 - swaync
 - hypridle
 - clipse
-- hyprshot
+- satty
 - hyprlock
 - gnome-system-monitor
 - brightnessctl
