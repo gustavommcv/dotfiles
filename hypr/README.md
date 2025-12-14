@@ -1,45 +1,29 @@
-![image](https://github.com/user-attachments/assets/7a38bd7b-7745-42ba-b098-1b8956c6a236)
+# Hyprland Configuration
 
-# Script Security Note
-**Always review scripts before granting execute permissions!**  
-Never run `chmod +x` on scripts without first:
-1. Checking their contents (`cat ~/.config/hypr/scripts/script.sh`)
-2. Understanding what they do
+This directory contains my personal Hyprland configuration.
 
-## Permission Requirements
-```bash
-chmod +x ~/.config/hypr/scripts/*
-```
+## Dependencies
 
-## Waybar settings
-https://github.com/gustavommcv/WaybarSettings-Hyprland
+The following packages are required for the full experience:
 
-## Rofi settings
-https://github.com/gustavommcv/Rofi-Settings
+- **Core**: `hyprland`, `hyprpolkitagent`, `xdg-desktop-portal-hyprland`
+- **Terminal**: `ghostty`
+- **Bar & Notifications**: `waybar`, `swaync`, `wttrbar`
+- **Launcher**: `rofi`
+- **Lock & Idle**: `hyprlock`, `hypridle`
+- **Audio & Media**: `pavucontrol`, `playerctl`, `swayosd`
+- **Clipboard**: `wl-clipboard`, `wl-clip-persist`, `clipse`
+- **Screenshots**: `grim`, `slurp`, `satty`
+- **System**: `nautilus`, `gnome-system-monitor`, `brightnessctl`
+- **Fonts**: `font-awesome`, `noto-fonts-cjk`
+- **Login**: `ly`
 
-## My dependencies:
-- hyprland
-- hyprpolkitagent
-- pavucontrol
-- xdg-desktop-portal-hyprland
-- wl-clipboard
-- wl-clip-persist
-- nautilus
-- ghostty
-- rofi
-- waybar
-- swaync
-- hypridle
-- clipse
-- satty
-- hyprlock
-- gnome-system-monitor
-- brightnessctl
-- playerctl
-- swayosd
-- grim
-- slurp
-- font-awesome
-- noto-fonts-cjk
-- wttrbar
-- greetd greetd-tuigreet
+## Scripts
+
+Custom scripts are located in `scripts/`. Ensure they are executable (`chmod +x scripts/*.sh`).
+
+- **`toggle-mic.sh`** (`Alt+M`):
+  Toggles the default microphone mute state. triggers a visually distinct OSD notification via `swayosd` and plays a custom audio cue.
+
+- **`toggle-menu.sh`** (`Super+Space`):
+  Toggles the Rofi application launcher. If Rofi is already running, it closes it; otherwise, it opens the drun mode.
