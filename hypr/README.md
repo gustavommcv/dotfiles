@@ -27,3 +27,11 @@ Custom scripts are located in `scripts/`. Ensure they are executable (`chmod +x 
 
 - **`toggle-menu.sh`** (`Super+Space`):
   Toggles the Rofi application launcher. If Rofi is already running, it closes it; otherwise, it opens the drun mode.
+
+## Troubleshooting
+
+### SwayOSD Caps Lock Popup
+If you use Caps Lock as a modifier (e.g., Ctrl) and want to disable the OSD popup when pressing it, disable the backend service:
+```bash
+sudo systemctl disable --now swayosd-libinput-backend.service
+```
