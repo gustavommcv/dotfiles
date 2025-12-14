@@ -25,9 +25,8 @@ https://github.com/gustavommcv/Rofi-Settings
 - wl-clipboard
 - wl-clip-persist
 - nautilus
-- kitty
+- ghostty
 - rofi
-- wofi
 - waybar
 - swaync
 - hypridle
@@ -37,6 +36,9 @@ https://github.com/gustavommcv/Rofi-Settings
 - gnome-system-monitor
 - brightnessctl
 - playerctl
+- swayosd
+- grim
+- slurp
 - font-awesome
 - noto-fonts-cjk
 - wttrbar
