@@ -3,17 +3,35 @@
     "interval": 1,
     "rotate": 270,
     "format": "{icon}",
-    "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+    "format-icons": [
+      "󰝦",
+      "󰪞",
+      "󰪟",
+      "󰪠",
+      "󰪡",
+      "󰪢",
+      "󰪣",
+      "󰪤",
+      "󰪥"
+    ],
     "max-length": 10
   },
-
   "cpu": {
     "interval": 1,
     "format": "{icon}",
     "rotate": 270,
-    "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"]
+    "format-icons": [
+      "󰝦",
+      "󰪞",
+      "󰪟",
+      "󰪠",
+      "󰪡",
+      "󰪢",
+      "󰪣",
+      "󰪤",
+      "󰪥"
+    ]
   },
-
   "mpris": {
     "format": "{player_icon} {title}",
     "format-paused": "<span color='grey'>{status_icon} {title}</span>",
@@ -25,14 +43,14 @@
     "status-icons": {
       "paused": "▶"
     },
-    "ignored-players": ["firefox"]
+    "ignored-players": [
+      "firefox"
+    ]
   },
-
   "tray": {
     "icon-size": 16,
     "spacing": 12
   },
-
   "custom/notification": {
     "tooltip": false,
     "format": "{icon}",
@@ -53,14 +71,12 @@
     "on-click": "swaync-client -t -sw",
     "escape": true
   },
-
   "hyprland/window": {
     "format": "<span  weight='bold' >{class}</span>",
     "max-length": 120,
     "icon": false,
     "icon-size": 13
   },
-
   "hyprland/workspaces": {
     "disable-scroll": true,
     "all-outputs": true,
@@ -96,7 +112,6 @@
       "on-scroll-down": "shift_down"
     }
   },
-
   "pulseaudio": {
     "format": "{format_source} {icon} {volume}%",
     "format-muted": "{format_source} <span foreground='#d22b2b'></span>",
@@ -109,11 +124,14 @@
       "phone": "",
       "portable": "",
       "car": "",
-      "default": ["", "", ""]
+      "default": [
+        "",
+        "",
+        ""
+      ]
     },
     "on-click": "pavucontrol"
   },
-
   "idle_inhibitor": {
     "format": "{icon}",
     "format-icons": {
@@ -121,15 +139,13 @@
       "deactivated": ""
     }
   },
-
   "custom/weather": {
     "format": "{}°",
     "tooltip": true,
-    "interval": 3600,
+    "interval": 60,
     "exec": "wttrbar",
     "return-type": "json"
   },
-
   "hyprland/language": {
     "format": "{}",
     "format-en": "US",
