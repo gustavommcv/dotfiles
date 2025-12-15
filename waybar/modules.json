@@ -1,6 +1,6 @@
 {
   "memory": {
-    "interval": 1,
+    "interval": 5,
     "rotate": 270,
     "format": "{icon}",
     "format-icons": [
@@ -17,7 +17,7 @@
     "max-length": 10
   },
   "cpu": {
-    "interval": 1,
+    "interval": 5,
     "format": "{icon}",
     "rotate": 270,
     "format-icons": [
@@ -142,7 +142,7 @@
   "custom/weather": {
     "format": "{}°",
     "tooltip": true,
-    "interval": 60,
+    "interval": 1800,
     "exec": "wttrbar",
     "return-type": "json"
   },
