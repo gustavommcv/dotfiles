@@ -4,8 +4,8 @@
 
 /*****----- Configuration -----*****/
 configuration {
-	// modi:                    "drun,run,filebrowser,window";
-    modi:                       "drun";
+	modi:                    "";
+    modi:                       "";
     show-icons:                 true;
     display-drun:               "";
     // display-run:                " Run";
@@ -45,7 +45,7 @@ configuration {
     alternate-active-foreground: var(background);
 
     /* For Screens with 1920x1080 resolution */
-    screen-margin:               275px 400px;
+    screen-margin:               40px;
     box-spacing:                 20px;
     list-padding:                8px;
     element-padding:             15px;
@@ -70,9 +70,9 @@ window {
     transparency:                "real";
     location:                    center;
     anchor:                      center;
-    fullscreen:                  true;
-    width:                       1366px;
-    height:                      768px;
+    fullscreen:                  false;
+    width:                       1280px;
+    height:                      550px;
     x-offset:                    0px;
     y-offset:                    0px;
 
@@ -80,8 +80,8 @@ window {
     enabled:                     true;
     margin:                      0px;
     padding:                     0px;
-    border:                      0px solid;
-    border-radius:               0px;
+    border:                      2px solid;
+    border-radius:               20px;
     border-color:                @border-colour;
     cursor:                      "default";
     /* Backgroud Colors */
