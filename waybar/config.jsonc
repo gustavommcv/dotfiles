@@ -10,14 +10,12 @@
   //   "passthrough": false,
   //   "gtk-layer-shell": true,
   //   "reload_style_on_change": true,
-
   "modules-left": [
     // "custom/smallspacer",
     "hyprland/workspaces",
     // "custom/spacer",
     "mpris",
   ],
-
   "modules-center": [
     "custom/weather",
     "clock"
@@ -27,7 +25,6 @@
     // "hyprland/window"
     // "custom/padd"
   ],
-
   "modules-right": [
     // "custom/padd",
     // "custom/l_end",
@@ -39,9 +36,16 @@
     // "custom/cliphist",
     "pulseaudio",
     "custom/notification",
-    "idle_inhibitor"
+    "idle_inhibitor",
+    "custom/power"
     // "custom/padd"
   ],
-
-  "include": ["~/.config/waybar/modules.json"],
+  "include": [
+    "~/.config/waybar/modules.json"
+  ],
+  "custom/power": {
+    "format": " ",
+    "tooltip": false,
+    "on-click": "wlogout"
+  }
 }
