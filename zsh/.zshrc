@@ -1,18 +1,16 @@
+DISABLE_AUTO_UPDATE="true"
+DISABLE_MAGIC_FUNCTIONS="true"
+DISABLE_COMPFIX="true"
+
 # ======================
 #  Environment Variables
 # ======================
 
-# NVM Configuration
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # Load nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # Load nvm completions
-
 # Go Path Configuration
-export PATH=$PATH:$(go env GOPATH)/bin
+export PATH=$PATH:$HOME/go/bin
 
 # Oh My Zsh Installation Path
 export ZSH="$HOME/.oh-my-zsh"
-
 
 # ======================
 #  ZSH Configuration
@@ -28,6 +26,9 @@ plugins=(
   zsh-syntax-highlighting
 )
 
+ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE="20"
+ZSH_AUTOSUGGEST_USE_ASYNC=1
+
 # ======================
 #  Aliases
 # ======================
@@ -38,19 +39,23 @@ alias ga="git add"
 alias gc="git commit -m"
 alias gp="git push"
 
+# Tmux
+alias ta="tmux attach"
+
 # System
 alias ll="ls -la"
 alias cl="clear"
-
-# Tmux
-alias ta="tmux attach"
 
 # ======================
 #  Initialization
 # ======================
 
+autoload -Uz compinit
+if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
+    compinit
+else
+    compinit -C
+fi
+
 # Load Oh My Zsh core
 source $ZSH/oh-my-zsh.sh
-
-# Angular CLI Completion
-source <(ng completion script)
