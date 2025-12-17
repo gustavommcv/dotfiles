@@ -7,7 +7,7 @@ Welcome to my personal dotfiles configuration. This repository contains the conf
 - **[Hyprland](hypr/)**: Window manager configuration, including keybindings, window rules, and startup scripts.
 - **[Waybar](waybar/)**: Status bar configuration.
 - **[Rofi](rofi/)**: Application launcher and menu configuration.
-- **[Ghostty](ghostty/)**: Terminal emulator configuration.
+- **[Foot](foot/)**: Terminal emulator configuration.
 - **[Tmux](tmux/)**: Terminal multiplexer configuration.
 - **[Zsh](zsh/)**: Shell configuration.
 
@@ -18,4 +18,4 @@ Welcome to my personal dotfiles configuration. This repository contains the conf
     - **Microphone Toggle**: `Alt+M` toggles the microphone with visual (SwayOSD) and audio feedback.
     - **Toggle Menu**: `Super+Space` launches the application menu (Rofi).
 - **SwayOSD Integration**: Elegant on-screen display for volume, brightness, and toggle states.
-- **Ghostty Terminal**: A GPU-accelerated, feature-rich terminal.
+- **Foot Terminal**: A fast, lightweight and minimalistic Wayland terminal emulator.
