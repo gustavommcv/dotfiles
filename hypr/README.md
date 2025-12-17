@@ -7,7 +7,7 @@ This directory contains my personal Hyprland configuration.
 The following packages are required for the full experience:
 
 - **Core**: `hyprland`, `hyprpolkitagent`, `xdg-desktop-portal-hyprland`
-- **Terminal**: `ghostty`
+- **Terminal**: `foot`
 - **Bar & Notifications**: `waybar`, `swaync`, `wttrbar`
 - **Launcher**: `rofi`
 - **Lock & Idle**: `hyprlock`, `hypridle`
