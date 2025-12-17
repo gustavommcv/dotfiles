@@ -6,6 +6,21 @@ DISABLE_COMPFIX="true"
 #  Environment Variables
 # ======================
 
+# NVM Configuration
+export NVM_DIR="$HOME/.nvm"
+
+# Lazy load NVM - only loads when you type node, npm, npx, nvm, etc.
+lazy_load_nvm() {
+  unset -f node npm npx nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+}
+
+node() { lazy_load_nvm && node "$@"; }
+npm() { lazy_load_nvm && npm "$@"; }
+npx() { lazy_load_nvm && npx "$@"; }
+nvm() { lazy_load_nvm && nvm "$@"; }
+
 # Go Path Configuration
 export PATH=$PATH:$HOME/go/bin
 
