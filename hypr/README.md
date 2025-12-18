@@ -13,7 +13,7 @@ The following packages are required for the full experience:
 - **Lock & Idle**: `hyprlock`, `hypridle`
 - **Audio & Media**: `pavucontrol`, `playerctl`, `swayosd`
 - **Clipboard**: `wl-clipboard`, `wl-clip-persist`, `clipse`
-- **Screenshots**: `grim`, `slurp`, `satty`
+- **Screenshots**: `hyprshot`, `hyprpicker`
 - **System**: `nautilus`, `gnome-system-monitor`, `brightnessctl`
 - **Fonts**: `font-awesome`, `noto-fonts-cjk`
 - **Login**: `ly`
