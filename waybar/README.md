@@ -8,6 +8,7 @@ My personal Waybar configuration, featuring a partitioned layout (left, center, 
 - **Icons**: FontAwesome (or compatible Nerd Font)
 - **Tools**:
   - `pavucontrol` (Audio control)
+  - `bluetui` (Bluetooth TUI)
   - `wttrbar` (Weather module)
   - `swaync-client` (Notification center)
 
@@ -31,6 +32,7 @@ The configuration is split into:
 ### Right
 - **Language**: Current keyboard layout (US/BR).
 - **Tray**: System tray for background apps.
+- **Bluetooth**: Status indicator (on/off/connected). Click opens `bluetui`.
 - **PulseAudio**: Volume control with mute toggle. Click opens `pavucontrol`.
 - **Notifications**: SwayNC notification indicator.
 - **Idle Inhibitor**: Toggle to prevent screen sleep (`eye` icon).
