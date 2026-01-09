@@ -14,7 +14,7 @@
     // "custom/smallspacer",
     "hyprland/workspaces",
     // "custom/spacer",
-    "mpris",
+    "mpris"
   ],
   "modules-center": [
     "custom/weather",
@@ -34,6 +34,7 @@
     "hyprland/language",
     "tray",
     // "custom/cliphist",
+    "bluetooth",
     "pulseaudio",
     "custom/notification",
     "idle_inhibitor",

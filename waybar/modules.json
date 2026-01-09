@@ -1,4 +1,12 @@
 {
+  "bluetooth": {
+    "format": " {status}",
+    "format-on": " On",
+    "format-off": "󰂲 Off",
+    "format-disabled": "󰂲 Off",
+    "format-connected": " {device_alias}",
+    "on-click": "foot bluetui"
+  },
   "memory": {
     "interval": 5,
     "rotate": 270,
