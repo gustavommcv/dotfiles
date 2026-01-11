@@ -7,39 +7,6 @@
     "format-connected": " {device_alias}",
     "on-click": "foot bluetui"
   },
-  "memory": {
-    "interval": 5,
-    "rotate": 270,
-    "format": "{icon}",
-    "format-icons": [
-      "󰝦",
-      "󰪞",
-      "󰪟",
-      "󰪠",
-      "󰪡",
-      "󰪢",
-      "󰪣",
-      "󰪤",
-      "󰪥"
-    ],
-    "max-length": 10
-  },
-  "cpu": {
-    "interval": 5,
-    "format": "{icon}",
-    "rotate": 270,
-    "format-icons": [
-      "󰝦",
-      "󰪞",
-      "󰪟",
-      "󰪠",
-      "󰪡",
-      "󰪢",
-      "󰪣",
-      "󰪤",
-      "󰪥"
-    ]
-  },
   "mpris": {
     "format": "{player_icon} {title}",
     "format-paused": "<span color='grey'>{status_icon} {title}</span>",
@@ -51,9 +18,7 @@
     "status-icons": {
       "paused": "▶"
     },
-    "ignored-players": [
-      "firefox"
-    ]
+    "ignored-players": ["firefox"]
   },
   "tray": {
     "icon-size": 16,
@@ -132,11 +97,7 @@
       "phone": "",
       "portable": "",
       "car": "",
-      "default": [
-        "",
-        "",
-        ""
-      ]
+      "default": ["", "", ""]
     },
     "on-click": "pavucontrol"
   },
@@ -158,5 +119,18 @@
     "format": "{}",
     "format-en": "US",
     "format-br": "BR"
+  },
+  "battery": {
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": "󱐋 {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-alt": "{icon} {time}",
+    "format-icons": ["", "", "", "", ""],
+    "interval": 60
   }
 }
+

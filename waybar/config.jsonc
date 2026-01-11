@@ -37,6 +37,7 @@
     "bluetooth",
     "pulseaudio",
     "custom/notification",
+    "battery",
     "idle_inhibitor",
     "custom/power"
     // "custom/padd"
