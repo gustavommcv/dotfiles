@@ -10,6 +10,7 @@ window#waybar {
   border-radius: 10px;
 }
 
+#network,
 #battery,
 #bluetooth,
 #pulseaudio,

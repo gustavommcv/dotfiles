@@ -5,7 +5,7 @@
     "format-off": "󰂲 Off",
     "format-disabled": "󰂲 Off",
     "format-connected": " {device_alias}",
-    "on-click": "foot bluetui"
+    "on-click": "~/.config/waybar/scripts/bluetooth-wrapper.sh"
   },
   "mpris": {
     "format": "{player_icon} {title}",
@@ -133,4 +133,3 @@
     "interval": 60
   }
 }
-
