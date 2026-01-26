@@ -14,6 +14,7 @@ The following packages are required for the full experience:
 - **Audio & Media**: `pavucontrol`, `playerctl`, `swayosd`
 - **Clipboard**: `wl-clipboard`, `wl-clip-persist`, `clipse`
 - **Screenshots**: `hyprshot`, `hyprpicker`
+- **Wifi**: `nm-applet`
 - **Bluetooth**: `bluetui`
 - **System**: `nautilus`, `gnome-system-monitor`, `brightnessctl`
 - **Fonts**: `font-awesome`, `noto-fonts-cjk`
