@@ -7,17 +7,17 @@ This directory contains my personal Hyprland configuration.
 The following packages are required for the full experience:
 
 - **Core**: `hyprland`, `hyprpolkitagent`, `xdg-desktop-portal-hyprland`
-- **Terminal**: `foot`
-- **Bar & Notifications**: `waybar`, `swaync`, `wttrbar`
-- **Launcher**: `rofi`
+- **Terminal**: `foot`, `btop`
+- **Bar & Notifications**: `waybar`, `swaync`, `wttrbar`, `aylurs-gtk-shell-git`
+- **Launcher**: `rofi`, `rofi-power-menu`
 - **Lock & Idle**: `hyprlock`, `hypridle`
-- **Audio & Media**: `pavucontrol`, `playerctl`, `swayosd`
+- **Audio & Media**: `pavucontrol`, `playerctl`, `swayosd-git`
 - **Clipboard**: `wl-clipboard`, `wl-clip-persist`, `clipse`
 - **Screenshots**: `hyprshot`, `hyprpicker`
-- **Wifi**: `nm-applet`
-- **Bluetooth**: `bluetui`
-- **System**: `nautilus`, `gnome-system-monitor`, `brightnessctl`
-- **Fonts**: `font-awesome`, `noto-fonts-cjk`
+- **Wifi & Bluetooth**: `nm-applet`, `bluetui`
+- **System**: `nautilus`, `gnome-system-monitor`, `brightnessctl`, `evolution`, `telegram-desktop`
+- **Shell & Tools**: `zsh`, `tmux`, `nvm`, `go`, `psmisc`, `procps-ng`, `git`
+- **Fonts**: `ttf-jetbrains-mono-nerd`, `ttf-font-awesome`, `noto-fonts-cjk`
 - **Login**: `ly`
 
 ## Scripts
