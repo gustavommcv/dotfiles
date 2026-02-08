@@ -1,11 +1,11 @@
 #!/bin/sh
 
 toggle_microphone() {
-	swayosd-client --input-volume mute-toggle
+	pactl set-source-mute @DEFAULT_SOURCE@ toggle
 }
 
 microphone_is_muted() {
-	pactl get-source-mute @DEFAULT_SOURCE@ | grep yes
+	pactl get-source-mute @DEFAULT_SOURCE@ | grep -q yes
 }
 
 if microphone_is_muted; then
