@@ -2,6 +2,13 @@
 
 Welcome to my personal dotfiles configuration. This repository contains the configuration files for my Linux environment, centered around Hyprland.
 
+## Branches
+
+This repository maintains two separate configurations in different branches:
+
+- **`main`**: Dedicated to my **Desktop** configuration.
+- **`notebook`**: Dedicated to my **Notebook** configuration.
+
 ## Structure
 
 - **[Hyprland](hypr/)**: Window manager configuration, including keybindings, window rules, and startup scripts.
