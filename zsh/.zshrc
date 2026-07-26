@@ -27,6 +27,9 @@ export PATH=$PATH:$HOME/go/bin
 # Oh My Zsh Installation Path
 export ZSH="$HOME/.oh-my-zsh"
 
+# Bun path
+export PATH="/home/gustavo/.cache/.bun/bin:$PATH"
+
 # ======================
 #  ZSH Configuration
 # ======================
@@ -57,6 +60,9 @@ alias gp="git push"
 # Tmux
 alias ta="tmux attach"
 
+# Arduino-cli
+alias ac="arduino-cli"
+
 # System
 alias ll="ls -la"
 alias cl="clear"
@@ -66,11 +72,18 @@ alias cl="clear"
 # ======================
 
 autoload -Uz compinit
-if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
-    compinit
+
+ZCOMPDUMP=$HOME/.cache/.zcompdump
+
+if [[ ! -f $ZCOMPDUMP ]]; then
+    compinit -d "$ZCOMPDUMP"
 else
-    compinit -C
+    compinit -C -d "$ZCOMPDUMP"
 fi
 
 # Load Oh My Zsh core
 source $ZSH/oh-my-zsh.sh
+
+
+# Load Angular CLI autocompletion.
+# source <(ng completion script)
