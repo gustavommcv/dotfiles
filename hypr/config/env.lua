@@ -10,4 +10,3 @@ hl.env("HYPRSHOT_DIR", "/home/gustavo/Pictures/Screenshots")
 
 hl.env("QT_QPA_PLATFORMTHEME", "qt6ct")
 hl.env("QT_STYLE_OVERRIDE", "kvantum")
-hl.env("GTK_THEME", "adw-gtk3-dark")
