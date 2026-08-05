@@ -11,6 +11,7 @@ My personal Waybar configuration, featuring a partitioned layout (left, center, 
   - `bluetui` (Bluetooth TUI)
   - `wttrbar` (Weather module)
   - `swaync-client` (Notification center)
+  - `ags` (Aylur's GTK Shell, `aylurs-gtk-shell-git` on the AUR) — powers the `ActivityCenter` widget opened from the clock. ⚠️ Upstream AGS v1 (what this AUR package tracks) was superseded by a v2 scaffolding tool for the Astal framework in late 2024; v1 now survives only through community forks. Revisit this dependency if `ags -t ActivityCenter` stops working after a system update.
 
 ## Configuration
 
@@ -27,7 +28,7 @@ The configuration is split into:
 
 ### Center
 - **Weather**: Displays temperature using `wttrbar`.
-- **Clock**: Date and time.
+- **Clock**: Date and time. Click opens the `ags`-powered ActivityCenter widget.
 
 ### Right
 - **Language**: Current keyboard layout (US/BR).
