@@ -47,3 +47,10 @@ hl.window_rule({
 	move = "20 monitor_h-120",
 	float = true,
 })
+
+-- Keep GPG/pinentry prompts and Nautilus from losing focus
+hl.window_rule({
+	name = "keep-nautilus-and-pinentry-focused",
+	match = { class = "(nautilus|pinentry-.*)" },
+	stay_focused = true,
+})
