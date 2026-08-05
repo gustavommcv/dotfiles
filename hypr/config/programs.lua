@@ -6,7 +6,6 @@
 local terminal = "footclient"
 local fileManager = "nautilus"
 local menu = "rofi -show drun"
-local broser = "google-chrome-stable"
 local emailClient = "evolution"
 local systemMonitor = terminal .. " -e btop"
 

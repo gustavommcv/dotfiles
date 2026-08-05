@@ -13,7 +13,7 @@ export PATH=$PATH:$HOME/go/bin
 export ZSH="$HOME/.oh-my-zsh"
 
 # Bun path
-export PATH="/home/gustavo/.cache/.bun/bin:$PATH"
+export PATH="$HOME/.cache/.bun/bin:$PATH"
 
 # ======================
 #  ZSH Configuration
