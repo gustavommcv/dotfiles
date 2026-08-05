@@ -79,7 +79,7 @@ hl.bind(
 )
 hl.bind(
 	"XF86AudioMicMute",
-	hl.dsp.exec_cmd("swayosd-client --input-volume mute-toggle"),
+	hl.dsp.exec_cmd("~/.config/hypr/scripts/toggle-mic.sh"),
 	{ locked = true, repeating = true }
 )
 hl.bind(
