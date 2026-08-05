@@ -50,7 +50,7 @@ is the only one that **returns** a table — the others configure Hyprland via t
 
 ## Dark theme
 
-Getting **every** toolkit to honour dark mode takes four independent layers. Three of them live
+Getting **every** toolkit to honour dark mode takes three independent layers. Two of them live
 outside this repository (`~/.config/gtk-*`, `~/.config/qt6ct`) and are **not versioned here** — on a
 fresh machine they have to be recreated.
 
@@ -58,7 +58,6 @@ fresh machine they have to be recreated.
 |---|---|---|
 | GTK theme + icons | `~/.config/gtk-3.0/settings.ini`, `gtk-4.0/settings.ini`, `~/.gtkrc-2.0` | `adw-gtk3-dark` / `Papirus-Dark` |
 | GTK via gsettings | `org.gnome.desktop.interface` | `color-scheme=prefer-dark`, `gtk-theme=adw-gtk3-dark` |
-| GTK hard override | [config/env.lua](config/env.lua) | `GTK_THEME=adw-gtk3-dark` |
 | Qt | [config/env.lua](config/env.lua) | `QT_QPA_PLATFORMTHEME=qt6ct`, `QT_STYLE_OVERRIDE=kvantum` |
 
 The gsettings values can be restored with:
@@ -69,9 +68,10 @@ gsettings set org.gnome.desktop.interface gtk-theme "adw-gtk3-dark"
 gsettings set org.gnome.desktop.interface icon-theme "Papirus-Dark"
 ```
 
-`GTK_THEME` is the layer that actually catches the stubborn cases — XWayland clients and GTK context
-menus (notably the `nm-applet` tray right-click menu) ignore gsettings and would otherwise render
-light. Changes to `env.lua` require a **full Hyprland restart**, not a reload.
+A previous revision of this config also forced `GTK_THEME=adw-gtk3-dark` in `env.lua` to catch
+XWayland clients and GTK context menus (notably the `nm-applet` tray right-click menu) that ignore
+gsettings — that override was deliberately removed; if those surfaces render light again, that's
+the first thing to reintroduce. Changes to `env.lua` require a **full Hyprland restart**, not a reload.
 
 Electron apps (Discord, Claude Desktop) do **not** follow system theming — each has its own
 in-app appearance setting.
