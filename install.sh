@@ -3,7 +3,7 @@
 # List of packages to install via yay
 PACKAGES=(
     # Core & Window Manager
-    hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-portal-hyprland
+    hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
     
     # Terminal & System Monitor
     foot btop
@@ -30,6 +30,7 @@ PACKAGES=(
     
     # Applications
     nautilus gnome-system-monitor brightnessctl evolution telegram-desktop
+    google-chrome # AUR
     
     # Shell & Developer Tools
     zsh tmux nvm go psmisc procps-ng git
@@ -43,3 +44,10 @@ PACKAGES=(
 
 echo "Installing dotfiles dependencies..."
 yay -S --needed "${PACKAGES[@]}"
+
+echo "Linking dotfiles into place..."
+for dir in hypr waybar rofi foot MangoHud; do
+    [ -d "$dir" ] && ln -sfn "$(pwd)/$dir" "$HOME/.config/$dir"
+done
+ln -sf "$(pwd)/tmux/.tmux.conf" "$HOME/.tmux.conf"
+ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"
