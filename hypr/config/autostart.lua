@@ -20,7 +20,7 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("clipse -listen")
 
 	-- Polkit
-	hl.exec_cmd("/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1")
+	hl.exec_cmd("systemctl --user start hyprpolkitagent")
 
 	-- Applets
 	hl.exec_cmd("nm-applet")

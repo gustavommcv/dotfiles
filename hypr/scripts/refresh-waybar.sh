@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
 
-killall waybar || waybar
+killall waybar 2>/dev/null
+waybar & disown
