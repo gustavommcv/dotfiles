@@ -45,7 +45,7 @@ is the only one that **returns** a table — the others configure Hyprland via t
 - **Browser / Mail**: `google-chrome`, `evolution`
 - **Theming**: `adw-gtk3`, `papirus-icon-theme`, `qt6ct`, `kvantum`, `nwg-look`
 - **Fonts**: `font-awesome`, `noto-fonts-cjk`
-- **Login**: `ly`
+- **Login**: `greetd`, `greetd-tuigreet` (default greeter config, not tracked in this repo)
 - **Optional**: `discord`, `telegram-desktop` (autostarted, see below)
 
 ## Dark theme
