@@ -39,7 +39,7 @@ PACKAGES=(
     ttf-jetbrains-mono-nerd ttf-font-awesome noto-fonts-cjk
     
     # Login Manager
-    ly
+    greetd greetd-tuigreet
 )
 
 echo "Installing dotfiles dependencies..."

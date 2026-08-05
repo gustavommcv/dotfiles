@@ -18,7 +18,7 @@ The following packages are required for the full experience:
 - **System**: `nautilus`, `gnome-system-monitor`, `brightnessctl`, `evolution`, `telegram-desktop`
 - **Shell & Tools**: `zsh`, `tmux`, `nvm`, `go`, `psmisc`, `procps-ng`, `git`
 - **Fonts**: `ttf-jetbrains-mono-nerd`, `ttf-font-awesome`, `noto-fonts-cjk`
-- **Login**: `ly`
+- **Login**: `greetd`, `greetd-tuigreet` (default greeter config, not tracked in this repo)
 
 ## Scripts
 
