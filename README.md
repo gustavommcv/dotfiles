@@ -23,7 +23,7 @@ handles GUI passthrough and Windows manages the session. Everything here is term
 ## Installation
 
 ```bash
-git clone <this-repo-url> ~/dotfiles
+git clone https://github.com/gustavommcv/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 git checkout wsl
 chmod +x install.sh # already tracked as executable, but harmless if re-run
