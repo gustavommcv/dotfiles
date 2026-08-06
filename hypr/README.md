@@ -6,7 +6,7 @@ This directory contains my personal Hyprland configuration.
 
 The following packages are required for the full experience:
 
-- **Core**: `hyprland`, `hyprpolkitagent`, `xdg-desktop-portal-hyprland`
+- **Core**: `hyprland`, `hyprpolkitagent`, `xdg-desktop-portal-hyprland`, `xdg-desktop-portal-gtk`
 - **Terminal**: `foot`, `btop`
 - **Bar & Notifications**: `waybar`, `swaync`, `wttrbar`, `aylurs-gtk-shell-git`
 - **Launcher**: `rofi`, `rofi-power-menu`
@@ -15,7 +15,7 @@ The following packages are required for the full experience:
 - **Clipboard**: `wl-clipboard`, `wl-clip-persist`, `clipse`
 - **Screenshots**: `hyprshot`, `hyprpicker`
 - **Wifi & Bluetooth**: `nm-applet`, `bluetui`
-- **System**: `nautilus`, `gnome-system-monitor`, `brightnessctl`, `evolution`, `telegram-desktop`
+- **System**: `nautilus`, `gnome-system-monitor`, `brightnessctl`, `evolution`, `telegram-desktop`, `google-chrome`
 - **Shell & Tools**: `zsh`, `tmux`, `nvm`, `go`, `psmisc`, `procps-ng`, `git`
 - **Fonts**: `ttf-jetbrains-mono-nerd`, `ttf-font-awesome`, `noto-fonts-cjk`
 - **Login**: `greetd`, `greetd-tuigreet` (default greeter config, not tracked in this repo)
@@ -24,8 +24,8 @@ The following packages are required for the full experience:
 
 Custom scripts are located in `scripts/`. Ensure they are executable (`chmod +x scripts/*.sh`).
 
-- **`toggle-mic.sh`** (`Alt+M`):
-  Toggles the default microphone mute state. triggers a visually distinct OSD notification via `swayosd` and plays a custom audio cue.
+- **`toggle-mic.sh`** (`Alt+M`, `XF86AudioMicMute`):
+  Toggles the default microphone mute state via `pactl` and plays a custom audio cue via `paplay` — no SwayOSD popup, just the sound.
 
 - **`toggle-menu.sh`** (`Super+Space`):
   Toggles the Rofi application launcher. If Rofi is already running, it closes it; otherwise, it opens the drun mode.

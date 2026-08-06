@@ -8,12 +8,13 @@ Welcome to my personal dotfiles configuration. This repository contains the conf
 
 ## Branches
 
-This repository maintains two separate configurations in different branches:
+This repository maintains three configurations in separate branches, one per machine/environment:
 
-- **`main`**: Dedicated to my **Desktop** configuration.
+- **`main`** *(this branch)*: Dedicated to my **Desktop** configuration — full Hyprland desktop.
 - **`notebook`**: Dedicated to my **Notebook** configuration — see its own README for hardware-specific notes (touchpad gestures, battery/idle timers, dark-theme forcing for Qt/GTK apps).
+- **`wsl`**: Arch Linux under **WSL2** — no display server of its own (WSLg handles GUI passthrough), so the entire Hyprland/Waybar/Rofi stack is dropped in favor of a terminal-only setup. See its own README for what's kept and why.
 
-Both branches share the same base layout; differences are limited to files that genuinely depend on the machine (touchpad input, power management, monitor layout) and are kept in sync otherwise.
+`main` and `notebook` share the same base layout; differences are limited to files that genuinely depend on the machine (touchpad input, power management, monitor layout) and are kept in sync otherwise. `wsl` is structurally different — it forked from `main` and removed everything that needs a compositor.
 
 ## Prerequisites
 
@@ -26,12 +27,13 @@ Both branches share the same base layout; differences are limited to files that 
 ```bash
 git clone https://github.com/gustavommcv/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-git checkout main   # or: git checkout notebook, depending on the machine
+git checkout main   # or: notebook / wsl, depending on the machine — see Branches above
 chmod +x install.sh # already tracked as executable, but harmless if re-run
-./install.sh        # installs every package via yay
+./install.sh        # installs every package via yay, then symlinks configs into place
 ```
 
-`install.sh` only installs packages — it does not yet symlink files into place. Until that's automated (tracked as a known gap), copy or symlink each directory to its target manually:
+`install.sh` installs every package via `yay` and then symlinks each directory to its target —
+no manual linking needed. For reference, this is what it links:
 
 | Repo path | Target |
 |---|---|
@@ -42,12 +44,6 @@ chmod +x install.sh # already tracked as executable, but harmless if re-run
 | `MangoHud/` (main only) | `~/.config/MangoHud/` |
 | `tmux/.tmux.conf` | `~/.tmux.conf` |
 | `zsh/.zshrc` | `~/.zshrc` |
-
-```bash
-for dir in hypr waybar rofi foot; do ln -sfn "$(pwd)/$dir" "$HOME/.config/$dir"; done
-ln -sf "$(pwd)/tmux/.tmux.conf" "$HOME/.tmux.conf"
-ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"
-```
 
 ## Structure
 
@@ -63,7 +59,7 @@ ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"
 
 - **Hyprland Window Manager**: A dynamic tiling window manager with fluid animations.
 - **Custom Scripts**:
-    - **Microphone Toggle**: `Alt+M` toggles the microphone with visual (SwayOSD) and audio feedback.
+    - **Microphone Toggle**: `Alt+M` (and the hardware mic-mute key) toggles the microphone with an audio cue.
     - **Toggle Menu**: `Super+Space` launches the application menu (Rofi).
 - **SwayOSD Integration**: Elegant on-screen display for volume, brightness, and toggle states.
 - **Foot Terminal**: A fast, lightweight and minimalistic Wayland terminal emulator.
