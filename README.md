@@ -37,15 +37,22 @@ script) even though `.zshrc` requires it — do that manually, then grab the two
 also expects:
 
 ```bash
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
 git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 ```
 
-(`--unattended` stops the installer from launching its own shell or touching your login shell —
-`install.sh` already handled that via `chsh`.) Skipping this step doesn't break the shell entirely,
-but you'll see `.zshrc:79: no such file or directory: .oh-my-zsh/oh-my-zsh.sh` on every prompt
-until it's done.
+`--unattended` stops the installer from launching its own shell or touching your login shell —
+`install.sh` already handled that via `chsh`. **`KEEP_ZSHRC=yes` is not optional here**: by
+default the OMZ installer backs up and *replaces* any existing `~/.zshrc` with its own template —
+since `install.sh` already symlinked ours into place, running the installer without this flag
+clobbers the symlink with OMZ's default `.zshrc` (you'd get its stock content back instead of this
+repo's config). If that already happened to you, re-run `ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"`
+from inside `~/dotfiles` to restore it — no data lost, the original backup OMZ makes
+(`~/.zshrc.pre-oh-my-zsh-*`) is just a copy of the same symlink anyway.
+
+Skipping the Oh My Zsh install entirely doesn't break the shell, but you'll see
+`.zshrc:79: no such file or directory: .oh-my-zsh/oh-my-zsh.sh` on every prompt until it's done.
 
 Two files can't be part of the symlink loop and need a one-time manual copy. Run both from
 **inside WSL** (where you already are for the steps above) — `/mnt/c/` is how WSL sees your
