@@ -1,53 +1,52 @@
 #!/usr/bin/env bash
 
-# List of packages to install via yay
+# Installer for the `wsl` branch of this dotfiles repo — targets WSL2 running the
+# official Arch Linux distro (`wsl --install archlinux`), not a bare-metal/VM install.
+# See: https://wiki.archlinux.org/title/Install_Arch_Linux_on_WSL
+#
+# Unlike main/notebook, this script uses only the official pacman repositories — a
+# fresh WSL Arch image has no AUR helper installed, and this environment doesn't need
+# one for anything below. If you later need an AUR package, install `base-devel` (already
+# in the list) plus `git`, then build it manually:
+#   git clone https://aur.archlinux.org/<pkg>.git && cd <pkg> && makepkg -si
+
+# List of packages to install via pacman
 PACKAGES=(
-    # Core & Window Manager
-    hyprland hyprlock hypridle hyprpolkitagent xdg-desktop-portal-hyprland xdg-desktop-portal-gtk
-    
-    # Terminal & System Monitor
-    foot btop
-    
-    # Bar, Notifications & UI
-    waybar swaync 
-    wttrbar aylurs-gtk-shell-git # AUR
-    
-    # Launcher
-    rofi rofi-power-menu
-    
-    # Audio & Media
-    pavucontrol playerctl
-    swayosd-git # AUR
-    
-    # Clipboard
-    wl-clipboard wl-clip-persist clipse # AUR
-    
-    # Screenshots
-    hyprshot hyprpicker # AUR
-    
-    # Connectivity
-    nm-applet bluetui # AUR
-    
-    # Applications
-    nautilus gnome-system-monitor brightnessctl evolution telegram-desktop
-    google-chrome # AUR
-    
-    # Shell & Developer Tools
-    zsh tmux nvm go psmisc procps-ng git
-    
+    # Shell & core tools
+    zsh tmux git base-devel
+
+    # Remote access, sync, monitoring
+    openssh rsync htop btop fastfetch
+
+    # Opens URLs/files with the Windows-side default app (e.g. links from the terminal
+    # open in the Windows browser) — essential for a GUI-less guest.
+    xdg-utils
+
+    # GPU acceleration through WSLg (Vulkan via the Dozen/DirectX12 translation layer).
+    # Optional — skip if you don't run anything that benefits from it.
+    mesa vulkan-dzn vulkan-icd-loader
+
+    # Clipboard integration for any GUI app launched through WSLg
+    wl-clipboard
+
     # Fonts
-    ttf-jetbrains-mono-nerd ttf-font-awesome noto-fonts-cjk
-    
-    # Login Manager
-    greetd greetd-tuigreet
+    ttf-jetbrains-mono-nerd
 )
 
 echo "Installing dotfiles dependencies..."
-yay -S --needed "${PACKAGES[@]}"
+sudo pacman -S --needed "${PACKAGES[@]}"
 
 echo "Linking dotfiles into place..."
-for dir in hypr waybar rofi foot MangoHud; do
+for dir in wsl scripts; do
     [ -d "$dir" ] && ln -sfn "$(pwd)/$dir" "$HOME/.config/$dir"
 done
 ln -sf "$(pwd)/tmux/.tmux.conf" "$HOME/.tmux.conf"
 ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"
+
+cat <<'EOF'
+
+Package install and symlinks done. Two files still need a manual copy — see README.md
+for details, they can't be symlinked from a user-owned repo:
+  - wsl/wsl.conf     -> /etc/wsl.conf              (root-owned, Linux side)
+  - wsl/.wslconfig   -> %USERPROFILE%\.wslconfig   (Windows side, outside this filesystem)
+EOF
