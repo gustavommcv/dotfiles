@@ -1,73 +1,93 @@
-# Dotfiles
+# Dotfiles — `wsl` branch
 
 ![License](https://img.shields.io/badge/license-MIT-2E6E71)
-![Platform](https://img.shields.io/badge/platform-Arch%20Linux-1793D1)
-![WM](https://img.shields.io/badge/WM-Hyprland-58E1FF)
+![Platform](https://img.shields.io/badge/platform-WSL2%20Arch%20Linux-1793D1)
 
-Welcome to my personal dotfiles configuration. This repository contains the configuration files for my Linux environment, centered around Hyprland.
-
-## Branches
-
-This repository maintains two separate configurations in different branches:
-
-- **`main`**: Dedicated to my **Desktop** configuration.
-- **`notebook`**: Dedicated to my **Notebook** configuration — see its own README for hardware-specific notes (touchpad gestures, battery/idle timers, dark-theme forcing for Qt/GTK apps).
-
-Both branches share the same base layout; differences are limited to files that genuinely depend on the machine (touchpad input, power management, monitor layout) and are kept in sync otherwise.
+This is the WSL2 branch of my personal dotfiles. `main` and `notebook` target real Hyprland
+desktops with their own display server; this branch targets **Arch Linux running inside WSL2**,
+which has no display server, compositor, or login manager of its own — [WSLg](https://github.com/microsoft/wslg)
+handles GUI passthrough and Windows manages the session. Everything here is terminal/shell-only.
 
 ## Prerequisites
 
-- **Distro**: Arch Linux or an Arch-based derivative (the package list in [install.sh](install.sh) assumes `pacman` + [`yay`](https://github.com/Jguer/yay) for AUR packages).
-- **Hyprland ≥ 0.55.0** — this repo's config is written in Hyprland's native Lua format (`hyprland.lua`), which requires that version or newer. Classic `hyprland.conf`/hyprlang users would need to port these files first.
-- `git` and `yay` installed before running the installer.
+- **Windows 11** (or Windows 10 with a recent WSL update) with WSL2 enabled.
+- **Official Arch Linux WSL image**, installed with:
+  ```powershell
+  wsl --install archlinux
+  ```
+  (or `wsl --install --from-file <rootfs>` for a manual image — see the
+  [Arch Wiki](https://wiki.archlinux.org/title/Install_Arch_Linux_on_WSL)).
+- `git`, `sudo` access, and `base-devel` inside the guest before running the installer
+  (a fresh Arch WSL image ships with a minimal package set — `install.sh` brings in the rest).
 
 ## Installation
 
 ```bash
 git clone <this-repo-url> ~/dotfiles
 cd ~/dotfiles
-git checkout main   # or: git checkout notebook, depending on the machine
+git checkout wsl
 chmod +x install.sh # already tracked as executable, but harmless if re-run
-./install.sh        # installs every package via yay
+./install.sh         # installs packages via pacman, then symlinks configs into place
 ```
 
-`install.sh` only installs packages — it does not yet symlink files into place. Until that's automated (tracked as a known gap), copy or symlink each directory to its target manually:
+`install.sh` only uses the official pacman repositories — see [`install.sh`](install.sh) for why,
+and how to build an AUR package manually if you ever need one.
 
-| Repo path | Target |
-|---|---|
-| `hypr/` | `~/.config/hypr/` |
-| `waybar/` | `~/.config/waybar/` |
-| `rofi/` | `~/.config/rofi/` |
-| `foot/` | `~/.config/foot/` |
-| `MangoHud/` (main only) | `~/.config/MangoHud/` |
-| `tmux/.tmux.conf` | `~/.tmux.conf` |
-| `zsh/.zshrc` | `~/.zshrc` |
+Two files can't be part of the symlink loop and need a one-time manual copy:
 
 ```bash
-for dir in hypr waybar rofi foot; do ln -sfn "$(pwd)/$dir" "$HOME/.config/$dir"; done
-ln -sf "$(pwd)/tmux/.tmux.conf" "$HOME/.tmux.conf"
-ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"
+sudo cp wsl/wsl.conf /etc/wsl.conf
+```
+```powershell
+copy wsl\.wslconfig %USERPROFILE%\.wslconfig
 ```
 
 ## Structure
 
-- **[Hyprland](hypr/)**: Window manager configuration, including keybindings, window rules, and startup scripts.
-- **[Waybar](waybar/)**: Status bar configuration.
-- **[Rofi](rofi/)**: Application launcher and menu configuration.
-- **[Foot](foot/)**: Terminal emulator configuration.
-- **[Tmux](tmux/)**: Terminal multiplexer configuration.
-- **[Zsh](zsh/)**: Shell configuration.
-- **[MangoHud](MangoHud/)** *(main only)*: Vulkan/OpenGL performance overlay for gaming.
+| Repo path | Target | Notes |
+|---|---|---|
+| `zsh/.zshrc` | `~/.zshrc` | Shell config — same as main/notebook, no GUI dependency |
+| `tmux/.tmux.conf` | `~/.tmux.conf` | Terminal multiplexer — same as main/notebook |
+| `scripts/` | `~/.config/scripts/` | `toggle-mic.sh` (pactl/paplay only — works over WSLg's PulseAudio-compatible socket) + its two audio cues |
+| `wsl/` | `~/.config/wsl/` (reference copy) | `wsl.conf` and `.wslconfig` — see below, both need a manual copy to their *real* location too |
+| `LICENSE`, `CHANGELOG.md` | — | Not deployed, just repo metadata |
 
-## Key Features
+## What's not here (and why)
 
-- **Hyprland Window Manager**: A dynamic tiling window manager with fluid animations.
-- **Custom Scripts**:
-    - **Microphone Toggle**: `Alt+M` toggles the microphone with visual (SwayOSD) and audio feedback.
-    - **Toggle Menu**: `Super+Space` launches the application menu (Rofi).
-- **SwayOSD Integration**: Elegant on-screen display for volume, brightness, and toggle states.
-- **Foot Terminal**: A fast, lightweight and minimalistic Wayland terminal emulator.
+Everything below exists on `main`/`notebook` to serve a Wayland compositor that doesn't exist in
+WSL2 — WSLg provides GUI passthrough to the Windows host directly, so none of it has a role to play:
 
-## Look and feel
+| Removed | Reason |
+|---|---|
+| `hypr/` (Hyprland, hypridle, hyprlock, hyprshot, hyprpicker, hyprpolkitagent) | No Wayland compositor in WSL2 — Windows is the compositor via WSLg. |
+| `waybar/` | Status bar reads Hyprland's IPC socket; meaningless without Hyprland. |
+| `rofi/` | GUI launcher depends on a running compositor; use the Windows Start menu or a terminal launcher instead. |
+| `foot/` | Wayland-only terminal; use Windows Terminal, WezTerm, or any GUI terminal via WSLg. |
+| `MangoHud/` | Vulkan/OpenGL performance overlay — no native GPU games run inside the WSL guest. |
+| `xdg-desktop-portal-hyprland`, `xdg-desktop-portal-gtk` | Portals broker access to the host's screen/files for sandboxed apps; WSL has no sandboxing story that needs them, and the Arch Wiki explicitly recommends skipping `xdg-desktop-portal-gtk` here (heavy, unnecessary dependency chain). |
+| `greetd`/`greetd-tuigreet`, `ly` | No login manager — Windows starts the WSL session directly. |
+| `swaync`, `swayosd` | Notification daemon and on-screen-display both require a Wayland compositor to render layer-shell surfaces into. |
+| `bluetui` + `bluetooth-wrapper.sh` | Bluetooth hardware is owned and managed by Windows, not passed through to the WSL guest. |
+| `clipse`, `wl-clip-persist` | WSL already bridges the clipboard with Windows natively; a Wayland clipboard history manager has nothing to listen to. |
+| `aylurs-gtk-shell` (AGS) | GTK widget shell rendered by a compositor that isn't running here. |
+| `wttrbar` | Weather module for Waybar, which is gone. |
+| `toggle-menu.sh`, `refresh-waybar.sh` | Controlled Rofi/Waybar specifically — nothing left for them to control. |
 
-Dark throughout (`#111111`–`#161616` backgrounds), `JetBrains Mono Nerd Font` everywhere for UI chrome, `dwindle` tiling layout. `main` runs with animations, blur-free shadows off, and 2px borders on a 5/10px gap; `notebook` disables animations entirely to save battery. Waybar is split into left (workspaces, media), center (weather, clock) and right (tray, bluetooth, volume, notifications, power) partitions.
+`toggle-mic.sh` is the one script that survived: it only calls `pactl`/`paplay`, and WSLg exposes a
+PulseAudio-compatible socket, so it still works. It moved to `scripts/` since `hypr/` is gone.
+
+## WSL-specific configs
+
+Two files in [`wsl/`](wsl/) aren't deployed by the usual symlink loop because they don't live
+in `$HOME` on the Linux side at all:
+
+- **[`wsl/wsl.conf`](wsl/wsl.conf)** → `/etc/wsl.conf` inside the guest (root-owned). Enables
+  systemd, sets interop/automount options. Copy with `sudo cp`.
+- **[`wsl/.wslconfig`](wsl/.wslconfig)** → `%USERPROFILE%\.wslconfig` on the **Windows** side.
+  Optional, global to every WSL2 distro on the machine (not just this one) — memory/processor
+  limits, WSLg GPU passthrough. Left fully commented out; uncomment only values you've decided
+  on for your own hardware.
+
+`install.sh` still symlinks `wsl/` into `~/.config/wsl/` for convenient reference/editing, but
+that symlink is not what WSL/Windows actually read from — the manual copies above are what takes
+effect.
