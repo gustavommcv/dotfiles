@@ -17,8 +17,9 @@ handles GUI passthrough and Windows manages the session. Everything here is term
   ```
   (or `wsl --install --from-file <rootfs>` for a manual image — see the
   [Arch Wiki](https://wiki.archlinux.org/title/Install_Arch_Linux_on_WSL)).
-- `git`, `sudo` access, and `base-devel` inside the guest before running the installer
-  (a fresh Arch WSL image ships with a minimal package set — `install.sh` brings in the rest).
+- `git` (to clone this repo) and `sudo` access (for `pacman`) inside the guest — everything else,
+  including `base-devel`, is installed by `install.sh` itself, since a fresh Arch WSL image ships
+  with a minimal package set.
 
 ## Installation
 
@@ -27,8 +28,12 @@ git clone https://github.com/gustavommcv/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 git checkout wsl
 chmod +x install.sh # already tracked as executable, but harmless if re-run
-./install.sh         # installs packages via pacman, then symlinks configs into place
+./install.sh         # installs packages via pacman, symlinks configs, sets zsh as your login shell
 ```
+
+`install.sh` also runs `chsh` to make zsh your default login shell (only if it isn't already, so
+re-running the script won't re-prompt for your password) — open a new terminal afterward, or
+`wsl --shutdown` from PowerShell then reopen the distro, for it to take effect.
 
 `install.sh` only uses the official pacman repositories — see [`install.sh`](install.sh) for why,
 and how to build an AUR package manually if you ever need one. That means it deliberately does
