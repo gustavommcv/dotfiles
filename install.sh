@@ -44,12 +44,17 @@ ln -sf "$(pwd)/tmux/.tmux.conf" "$HOME/.tmux.conf"
 ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"
 
 # Installing the zsh package doesn't make it your login shell — that's a separate
-# /etc/passwd change. Only touch it if it isn't already set, so re-running this script
-# doesn't re-prompt for a password every time.
+# /etc/passwd change. Hardcoded to /usr/bin/zsh instead of `command -v zsh`: on Arch's
+# merged-usr layout /usr/sbin is just a symlink to /usr/bin, so PATH order can make
+# `command -v` resolve to /usr/sbin/zsh — same file, but chsh matches /etc/shells by
+# exact string, and only /usr/bin/zsh is listed there (added by the zsh package itself).
+# Only touch it if it isn't already set, so re-running this script doesn't re-prompt for
+# a password every time.
+zsh_path="/usr/bin/zsh"
 current_shell="$(getent passwd "$USER" | cut -d: -f7)"
-if [ "$current_shell" != "$(command -v zsh)" ]; then
+if [ "$current_shell" != "$zsh_path" ]; then
     echo "Setting zsh as your login shell (you'll be prompted for your password)..."
-    chsh -s "$(command -v zsh)"
+    chsh -s "$zsh_path"
 fi
 
 cat <<'EOF'
