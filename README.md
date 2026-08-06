@@ -33,14 +33,20 @@ chmod +x install.sh # already tracked as executable, but harmless if re-run
 `install.sh` only uses the official pacman repositories — see [`install.sh`](install.sh) for why,
 and how to build an AUR package manually if you ever need one.
 
-Two files can't be part of the symlink loop and need a one-time manual copy:
+Two files can't be part of the symlink loop and need a one-time manual copy. Run both from
+**inside WSL** (where you already are for the steps above) — `/mnt/c/` is how WSL sees your
+Windows `C:` drive, so there's no need to switch to PowerShell or deal with `\\wsl$\` paths:
 
 ```bash
 sudo cp wsl/wsl.conf /etc/wsl.conf
+
+# Replace <win-username> with your Windows account name (the folder name under C:\Users\).
+# Not sure what it is? Run: cmd.exe /c echo %USERNAME%
+cp wsl/.wslconfig "/mnt/c/Users/<win-username>/.wslconfig"
 ```
-```powershell
-copy wsl\.wslconfig %USERPROFILE%\.wslconfig
-```
+
+`.wslconfig` changes only take effect after a full WSL restart — run `wsl --shutdown` from
+PowerShell (not just closing the terminal window), then reopen your distro.
 
 ## Structure
 
