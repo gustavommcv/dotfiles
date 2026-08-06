@@ -1,8 +1,10 @@
 # Changelog
 
-This repository tracks two long-lived branches (`main` for desktop, `notebook` for laptop) rather than
-sequential releases, so this log is organized by branch and date rather than by version number. Entries
-below start at the branches' last full sync point.
+This repository tracks three long-lived branches (`main` for desktop, `notebook` for laptop, `wsl`
+for Arch-on-WSL2) rather than sequential releases, so this log is organized by branch and date
+rather than by version number. `wsl` has its own section in its branch's copy of this file (it
+forked from `main` on 2026-08-05, long after `main`/`notebook` split). Entries below start at the
+`main`/`notebook` split point.
 
 ## main
 
