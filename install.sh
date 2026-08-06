@@ -43,10 +43,22 @@ done
 ln -sf "$(pwd)/tmux/.tmux.conf" "$HOME/.tmux.conf"
 ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"
 
+# Installing the zsh package doesn't make it your login shell — that's a separate
+# /etc/passwd change. Only touch it if it isn't already set, so re-running this script
+# doesn't re-prompt for a password every time.
+current_shell="$(getent passwd "$USER" | cut -d: -f7)"
+if [ "$current_shell" != "$(command -v zsh)" ]; then
+    echo "Setting zsh as your login shell (you'll be prompted for your password)..."
+    chsh -s "$(command -v zsh)"
+fi
+
 cat <<'EOF'
 
 Package install and symlinks done. Two files still need a manual copy — see README.md
 for details, they can't be symlinked from a user-owned repo:
   - wsl/wsl.conf     -> /etc/wsl.conf              (root-owned, Linux side)
   - wsl/.wslconfig   -> %USERPROFILE%\.wslconfig   (Windows side, outside this filesystem)
+
+If your shell just changed to zsh, open a new terminal (or `wsl --shutdown` from
+PowerShell then reopen the distro) for it to take effect.
 EOF
