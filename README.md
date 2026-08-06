@@ -24,7 +24,7 @@ Both branches share the same base layout; differences are limited to files that 
 ## Installation
 
 ```bash
-git clone <this-repo-url> ~/dotfiles
+git clone https://github.com/gustavommcv/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 git checkout main   # or: git checkout notebook, depending on the machine
 chmod +x install.sh # already tracked as executable, but harmless if re-run
