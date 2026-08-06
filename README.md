@@ -31,7 +31,21 @@ chmod +x install.sh # already tracked as executable, but harmless if re-run
 ```
 
 `install.sh` only uses the official pacman repositories — see [`install.sh`](install.sh) for why,
-and how to build an AUR package manually if you ever need one.
+and how to build an AUR package manually if you ever need one. That means it deliberately does
+**not** install Oh My Zsh (no official pacman/AUR package for it, just an upstream curl-pipe-to-shell
+script) even though `.zshrc` requires it — do that manually, then grab the two plugins `.zshrc`
+also expects:
+
+```bash
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+```
+
+(`--unattended` stops the installer from launching its own shell or touching your login shell —
+`install.sh` already handled that via `chsh`.) Skipping this step doesn't break the shell entirely,
+but you'll see `.zshrc:79: no such file or directory: .oh-my-zsh/oh-my-zsh.sh` on every prompt
+until it's done.
 
 Two files can't be part of the symlink loop and need a one-time manual copy. Run both from
 **inside WSL** (where you already are for the steps above) — `/mnt/c/` is how WSL sees your
