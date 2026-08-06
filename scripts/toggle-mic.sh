@@ -9,9 +9,8 @@ microphone_is_muted() {
 }
 
 if microphone_is_muted; then
-	toggle_microphone && paplay ~/.config/hypr/audios/discord-unmute-sound.mp3
+	toggle_microphone && paplay ~/.config/scripts/audios/discord-unmute-sound.mp3
 else
-	toggle_microphone && paplay ~/.config/hypr/audios/discord-mute-sound.mp3
+	toggle_microphone && paplay ~/.config/scripts/audios/discord-mute-sound.mp3
 fi
-
 
