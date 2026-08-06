@@ -61,6 +61,9 @@ alias ta="tmux attach"
 alias ll="ls -la"
 alias cl="clear"
 
+# Mic mute toggle (works under WSLg's PulseAudio-compatible socket)
+alias micmute="~/.config/scripts/toggle-mic.sh"
+
 # ======================
 #  Initialization
 # ======================
