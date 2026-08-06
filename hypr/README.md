@@ -33,7 +33,7 @@ is the only one that **returns** a table — the others configure Hyprland via t
 
 - **Core**: `hyprland`, `hyprpolkitagent`, `xdg-desktop-portal-hyprland`, `xdg-desktop-portal-gtk`
 - **Terminal**: `foot` (runs as `foot --server` / `footclient`)
-- **Bar & Notifications**: `waybar`, `swaync`, `wttrbar`
+- **Bar & Notifications**: `waybar`, `swaync`, `wttrbar`, `aylurs-gtk-shell-git` (see [waybar/README.md](../waybar/README.md) for its deprecation status)
 - **Launcher**: `rofi`, `rofi-power-menu`
 - **Lock & Idle**: `hyprlock`, `hypridle`
 - **Audio & Media**: `pavucontrol`, `playerctl`, `swayosd`
@@ -44,7 +44,8 @@ is the only one that **returns** a table — the others configure Hyprland via t
 - **System**: `nautilus`, `gnome-system-monitor`, `btop`, `brightnessctl`
 - **Browser / Mail**: `google-chrome`, `evolution`
 - **Theming**: `adw-gtk3`, `papirus-icon-theme`, `qt6ct`, `kvantum`, `nwg-look`
-- **Fonts**: `font-awesome`, `noto-fonts-cjk`
+- **Shell & Dev tools**: `zsh`, `tmux`, `go`, `psmisc`, `procps-ng`, `git`, `bun-bin`, `arduino-cli`
+- **Fonts**: `ttf-jetbrains-mono-nerd`, `ttf-font-awesome`, `noto-fonts-cjk`
 - **Login**: `greetd`, `greetd-tuigreet` (default greeter config, not tracked in this repo)
 - **Optional**: `discord`, `telegram-desktop` (autostarted, see below)
 
@@ -124,6 +125,7 @@ alive (`pgrep -a hypridle`) and restart it with `setsid -f hypridle`.
 | `SUPER + P` | Pseudo tile |
 | `SUPER + S` | Toggle split (dwindle) |
 | `SUPER + H/J/K/L` | Move focus (vim directions) |
+| `SUPER + SHIFT + H/J/K/L` | Move window (vim directions) |
 | `SUPER + LMB / RMB` | Drag / resize window |
 
 ### Workspaces
@@ -147,8 +149,10 @@ Saved to `$HYPRSHOT_DIR` (`~/Pictures/Screenshots`).
 
 ### Media
 
-Standard `XF86` keys drive volume, mic, brightness and playback through `swayosd-client` and
-`playerctl`. All are `locked`, so they keep working on the lock screen.
+Standard `XF86` keys drive volume, brightness and playback through `swayosd-client` and
+`playerctl`. The mic-mute key is the one exception — it runs [`toggle-mic.sh`](scripts/toggle-mic.sh)
+directly instead, same as `Alt+M`, so both triggers behave identically. All are `locked`, so they
+keep working on the lock screen.
 
 ## Input
 
