@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# Launches the docker-alpine dev environment. Usage:
+#   ./dev              # drop into zsh at /workspace (cwd, bind-mounted)
+#   ./dev nvim foo.lua # run a command instead of the default shell
+#   ./dev --pull       # force-check for a newer image before running
+#   ./dev --build      # build from the local Dockerfile instead of pulling
+#
+# Self-contained on purpose — this file alone (no other repo contents) is
+# enough to run the environment, so it can be curled directly onto a lab PC:
+#   curl -fsSL https://raw.githubusercontent.com/gustavommcv/dotfiles/docker-alpine/dev -o dev
+#   chmod +x dev && ./dev
+set -euo pipefail
+
+IMAGE="${DOTFILES_IMAGE:-ghcr.io/gustavommcv/dotfiles-docker-alpine:latest}"
+NVIM_DATA_VOLUME="dotfiles-nvim-data"
+NVIM_CACHE_VOLUME="dotfiles-nvim-cache"
+NVIM_STATE_VOLUME="dotfiles-nvim-state"
+
+if ! command -v docker >/dev/null 2>&1; then
+    echo "docker not found on PATH — install Docker first." >&2
+    exit 1
+fi
+
+pull=false
+build=false
+args=()
+for arg in "$@"; do
+    case "$arg" in
+        --pull) pull=true ;;
+        --build) build=true ;;
+        *) args+=("$arg") ;;
+    esac
+done
+
+if $build; then
+    echo "Building $IMAGE from local Dockerfile..."
+    docker build -t "$IMAGE" "$(dirname "$0")"
+elif $pull || ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+    echo "Pulling $IMAGE..."
+    docker pull "$IMAGE"
+fi
+# Otherwise: image already cached locally, run offline without touching the network.
+
+mount_args=(
+    -v "$(pwd):/workspace"
+    -v "$NVIM_DATA_VOLUME:/home/dev/.local/share/nvim"
+    -v "$NVIM_CACHE_VOLUME:/home/dev/.cache/nvim"
+    -v "$NVIM_STATE_VOLUME:/home/dev/.local/state/nvim"
+)
+
+# Only mount what actually exists on the host — a bare `docker run -v` on a
+# missing path creates an empty directory there instead of failing, which would
+# silently hide your real ~/.ssh or ~/.gitconfig inside the container.
+[ -d "$HOME/.ssh" ] && mount_args+=(-v "$HOME/.ssh:/home/dev/.ssh:ro")
+[ -f "$HOME/.gitconfig" ] && mount_args+=(-v "$HOME/.gitconfig:/home/dev/.gitconfig:ro")
+
+# ${args[@]+"${args[@]}"} instead of plain "${args[@]}": under `set -u`, expanding
+# an empty array is a hard error on bash < 4.4 (still the default on macOS) —
+# this idiom expands to nothing instead of erroring when args is empty.
+exec docker run --rm -it \
+    -e HOST_UID="$(id -u)" \
+    -e HOST_GID="$(id -g)" \
+    "${mount_args[@]}" \
+    "$IMAGE" \
+    ${args[@]+"${args[@]}"}

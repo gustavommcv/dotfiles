@@ -6,22 +6,7 @@ DISABLE_COMPFIX="true"
 #  Environment Variables
 # ======================
 
-# NVM Configuration
-export NVM_DIR="$HOME/.nvm"
-
-# Lazy load NVM - only loads when you type node, npm, npx, nvm, etc.
-lazy_load_nvm() {
-  unset -f node npm npx nvm
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-}
-
-node() { lazy_load_nvm && node "$@"; }
-npm() { lazy_load_nvm && npm "$@"; }
-npx() { lazy_load_nvm && npx "$@"; }
-nvm() { lazy_load_nvm && nvm "$@"; }
-
-# Go Path Configuration
+# Go Path Configuration (go install puts binaries here)
 export PATH=$PATH:$HOME/go/bin
 
 # Oh My Zsh Installation Path
@@ -36,8 +21,8 @@ ZSH_THEME="robbyrussell"
 
 # Plugin Management
 plugins=(
-  git 
-  zsh-autosuggestions 
+  git
+  zsh-autosuggestions
   zsh-syntax-highlighting
 )
 
@@ -61,18 +46,18 @@ alias ta="tmux attach"
 alias ll="ls -la"
 alias cl="clear"
 
-# Mic mute toggle (works under WSLg's PulseAudio-compatible socket)
-alias micmute="~/.config/scripts/toggle-mic.sh"
-
 # ======================
 #  Initialization
 # ======================
 
 autoload -Uz compinit
-if [[ -n ~/.zcompdump(#qN.mh+24) ]]; then
-    compinit
+
+ZCOMPDUMP=$HOME/.cache/.zcompdump
+
+if [[ ! -f $ZCOMPDUMP ]]; then
+    compinit -d "$ZCOMPDUMP"
 else
-    compinit -C
+    compinit -C -d "$ZCOMPDUMP"
 fi
 
 # Load Oh My Zsh core

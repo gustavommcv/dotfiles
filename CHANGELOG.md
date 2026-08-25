@@ -1,34 +1,18 @@
 # Changelog
 
-## wsl
+## docker-alpine
 
-- **2026-08-06** — `install.sh` now clones and installs [minimal-neovim](https://github.com/gustavommcv/minimal-neovim)
-  (own repo, not vendored here) into `~/.config/nvim`, plus its dependencies
-  (`neovim`, `ripgrep`, `tree-sitter-cli`, `unzip`, `nodejs`, `npm`, `go` — `gcc` was
-  already covered by `base-devel`).
-- **2026-08-05** — Documented `KEEP_ZSHRC=yes` as required on the Oh My Zsh install command — without
-  it, the installer clobbers the `.zshrc` symlink `install.sh` already put in place with its own
-  template; added the recovery command for anyone who already hit this.
-- **2026-08-05** — Documented the Oh My Zsh + `zsh-autosuggestions`/`zsh-syntax-highlighting` install
-  step — none of the three are pacman/AUR packages, so `install.sh` deliberately doesn't install them,
-  but `.zshrc` errors without them.
-- **2026-08-05** — `install.sh`'s `chsh` call now hardcodes `/usr/bin/zsh` instead of `command -v zsh`,
-  which could resolve to `/usr/sbin/zsh` on Arch's merged-usr layout — same binary, but `chsh` matches
-  `/etc/shells` by exact string and only `/usr/bin/zsh` is listed there.
-- **2026-08-05** — `install.sh` now actually sets zsh as the login shell via `chsh` — installing the
-  package alone never did.
-- **2026-08-05** — Fixed the `.wslconfig` copy instructions: the previous `copy` command assumed
-  running from PowerShell with a Windows-side path, but the repo lives inside the WSL filesystem;
-  replaced with a plain `cp` through `/mnt/c/`, runnable from the same WSL shell as every other step.
-- **2026-08-05** — Filled in the actual repo URL in the README clone instructions.
-- **2026-08-05** — Initial WSL branch: forked from `main` (commit `64d7b49`), removed the
-  entire GUI/compositor stack (Hyprland, Waybar, Rofi, foot, MangoHud, and everything that
-  only existed to serve them — portals, greetd, SwayNC/SwayOSD, bluetui, clipse, AGS), relocated
-  the one script that's still genuinely generic (`toggle-mic.sh` + its audio cues) to a new
-  top-level `scripts/` directory, added WSL-specific configs (`wsl/wsl.conf`, `wsl/.wslconfig`),
-  and rewrote `install.sh` around the official pacman repositories instead of `yay`/AUR.
+- **2026-08-06** — Initial branch: forked from `wsl`, removed everything WSL/audio-specific
+  (`scripts/`, `wsl/`, `install.sh`). Added a `Dockerfile` that bakes a full
+  [minimal-neovim](https://github.com/gustavommcv/minimal-neovim) install (Lazy sync, Mason LSPs/
+  formatters, Treesitter parsers) at image build time instead of on first container start;
+  `entrypoint.sh` for host UID/GID remapping via `su-exec`; a `dev` launcher script; and
+  `.github/workflows/docker-build.yml` publishing to `ghcr.io/gustavommcv/dotfiles-docker-alpine`
+  on push, weekly cron, and manual dispatch. Resolved two musl/glibc incompatibilities
+  (`tree-sitter-cli`, verified Mason's `lua-language-server` musl asset) by using Alpine-native
+  `apk` packages instead of the npm/Mason paths the other branches use.
 
 ---
 
-*This branch's history starts here — see `main`'s and `notebook`'s own `CHANGELOG.md` for their
+*This branch's history starts here — see `main`'s, `notebook`'s, and `wsl`'s own `CHANGELOG.md` for
 history prior to this fork.*

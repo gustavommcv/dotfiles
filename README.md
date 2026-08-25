@@ -1,135 +1,181 @@
-# Dotfiles — `wsl` branch
+# Dotfiles — `docker-alpine` branch
 
 ![License](https://img.shields.io/badge/license-MIT-2E6E71)
-![Platform](https://img.shields.io/badge/platform-WSL2%20Arch%20Linux-1793D1)
+![Platform](https://img.shields.io/badge/platform-Alpine%20Linux%20%2F%20Docker-1793D1)
 
-This is the WSL2 branch of my personal dotfiles. `main` and `notebook` target real Hyprland
-desktops with their own display server; this branch targets **Arch Linux running inside WSL2**,
-which has no display server, compositor, or login manager of its own — [WSLg](https://github.com/microsoft/wslg)
-handles GUI passthrough and Windows manages the session. Everything here is terminal/shell-only.
+A portable dev environment — Neovim ([minimal-neovim](https://github.com/gustavommcv/minimal-neovim)) +
+zsh + tmux on Alpine — packaged as a Docker image so it can run on machines where installing
+anything isn't an option (university lab PCs), as long as Docker is available. Unlike `main`,
+`notebook`, and `wsl`, this isn't "clone the repo and run `install.sh` on your own machine" — the
+environment is pre-built once by CI and pulled ready-to-use.
 
-## Prerequisites
-
-- **Windows 11** (or Windows 10 with a recent WSL update) with WSL2 enabled.
-- **Official Arch Linux WSL image**, installed with:
-  ```powershell
-  wsl --install archlinux
-  ```
-  (or `wsl --install --from-file <rootfs>` for a manual image — see the
-  [Arch Wiki](https://wiki.archlinux.org/title/Install_Arch_Linux_on_WSL)).
-- `git` (to clone this repo) and `sudo` access (for `pacman`) inside the guest — everything else,
-  including `base-devel`, is installed by `install.sh` itself, since a fresh Arch WSL image ships
-  with a minimal package set.
-
-## Installation
+## Quick start
 
 ```bash
 git clone https://github.com/gustavommcv/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-git checkout wsl
-chmod +x install.sh # already tracked as executable, but harmless if re-run
-./install.sh         # installs packages via pacman, symlinks configs, sets zsh as your login shell
+git checkout docker-alpine
+./dev
 ```
 
-`install.sh` also runs `chsh` to make zsh your default login shell (only if it isn't already, so
-re-running the script won't re-prompt for your password) — open a new terminal afterward, or
-`wsl --shutdown` from PowerShell then reopen the distro, for it to take effect.
+`./dev` pulls `ghcr.io/gustavommcv/dotfiles-docker-alpine:latest` if it isn't cached locally yet,
+then drops you into zsh at `/workspace` — a bind mount of whatever directory you ran it from — with
+Neovim, LSPs, formatters, and Treesitter parsers already installed. `nvim` is ready immediately,
+no `:Lazy sync` wait.
 
-`install.sh` only uses the official pacman repositories — see [`install.sh`](install.sh) for why,
-and how to build an AUR package manually if you ever need one. That means it deliberately does
-**not** install Oh My Zsh (no official pacman/AUR package for it, just an upstream curl-pipe-to-shell
-script) even though `.zshrc` requires it — do that manually, then grab the two plugins `.zshrc`
-also expects:
+Don't want to clone the whole repo first? `./dev` is a single self-contained file:
 
 ```bash
-KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+curl -fsSL https://raw.githubusercontent.com/gustavommcv/dotfiles/docker-alpine/dev -o dev
+chmod +x dev
+./dev
 ```
 
-`--unattended` stops the installer from launching its own shell or touching your login shell —
-`install.sh` already handled that via `chsh`. **`KEEP_ZSHRC=yes` is not optional here**: by
-default the OMZ installer backs up and *replaces* any existing `~/.zshrc` with its own template —
-since `install.sh` already symlinked ours into place, running the installer without this flag
-clobbers the symlink with OMZ's default `.zshrc` (you'd get its stock content back instead of this
-repo's config). If that already happened to you, re-run `ln -sf "$(pwd)/zsh/.zshrc" "$HOME/.zshrc"`
-from inside `~/dotfiles` to restore it — no data lost, the original backup OMZ makes
-(`~/.zshrc.pre-oh-my-zsh-*`) is just a copy of the same symlink anyway.
-
-Skipping the Oh My Zsh install entirely doesn't break the shell, but you'll see
-`.zshrc:79: no such file or directory: .oh-my-zsh/oh-my-zsh.sh` on every prompt until it's done.
-
-Two files can't be part of the symlink loop and need a one-time manual copy. Run both from
-**inside WSL** (where you already are for the steps above) — `/mnt/c/` is how WSL sees your
-Windows `C:` drive, so there's no need to switch to PowerShell or deal with `\\wsl$\` paths:
+Or skip the script and run Docker directly:
 
 ```bash
-sudo cp wsl/wsl.conf /etc/wsl.conf
-
-# Replace <win-username> with your Windows account name (the folder name under C:\Users\).
-# Not sure what it is? Run: cmd.exe /c echo %USERNAME%
-cp wsl/.wslconfig "/mnt/c/Users/<win-username>/.wslconfig"
+docker pull ghcr.io/gustavommcv/dotfiles-docker-alpine:latest
+docker run --rm -it \
+    -e HOST_UID="$(id -u)" -e HOST_GID="$(id -g)" \
+    -v "$(pwd):/workspace" \
+    -v "$HOME/.ssh:/home/dev/.ssh:ro" \
+    -v "$HOME/.gitconfig:/home/dev/.gitconfig:ro" \
+    ghcr.io/gustavommcv/dotfiles-docker-alpine:latest
 ```
 
-`.wslconfig` changes only take effect after a full WSL restart — run `wsl --shutdown` from
-PowerShell (not just closing the terminal window), then reopen your distro.
+`./dev` exists mainly to get the `HOST_UID`/`HOST_GID` env vars and the conditional mounts right
+without having to remember them — see [Persistence & host integration](#persistence--host-integration).
+
+## Why a pre-built image, not a local build
+
+The whole point of this branch is a university lab PC: Docker is there, nothing else is, and the
+next class starts in ten minutes. A local build (`docker build` from `Dockerfile`) has to run every
+step below — `apk add` the language toolchains, clone `minimal-neovim`, `Lazy! sync`, install every
+LSP server/formatter through Mason, compile every Treesitter parser — on *that* machine, every time.
+None of that is cached from a previous session, because you're not going to be on the same lab PC
+twice in a row.
+
+A pre-built image moves all of that to CI, once, per change — `docker pull` is just fetching
+already-compiled layers. Reproducibility is a side benefit, not the main reason: whichever lab PC
+you're on gets the exact same environment, pinned to a specific `minimal-neovim` commit at build
+time (see [Updating](#updating)).
+
+## What's essential vs. installed on demand
+
+| Category | Packages | Why |
+|---|---|---|
+| **Essential** | `neovim` `git` `openssh-client` `zsh` `tmux` `bash` `curl` `ca-certificates` `ripgrep` `fd` `unzip` | Editor, VCS, shell, and what Telescope/Mason need to function at all. `bash` matters even though the shell is zsh — several npm postinstall scripts and the Oh My Zsh installer hardcode `#!/bin/bash`, which doesn't exist on a stock Alpine image. |
+| **musl compat** | `tree-sitter-cli` `gcompat` `shadow` `su-exec` | See [Alpine/musl compatibility](#alpinemusl-compatibility) below — these exist specifically because this is Alpine, not Arch. |
+| **Development** | `nodejs` `npm` `go` `python3` `build-base` | What `minimal-neovim`'s 8 default LSP servers need to run (5 are npm packages, `gopls`/`goimports` need Go only at install time, `build-base` compiles Treesitter parsers) — see that repo's own README for the exact breakdown. |
+| **Not included** | `texlive`, `zathura`, `arduino-cli`, `clangd` | LaTeX and Arduino support are opt-in even in `minimal-neovim` itself (see its docs) — no reason to bake them into a generic image. Add with a plain `apk add` inside a running container if you ever need them for one session; they won't persist across containers unless you rebuild the image with them added. |
+
+Nothing here is a guess — every package above was checked against what the pinned `minimal-neovim`
+commit's `lua/plugins/mason.lua` and `treesitter.lua` actually declare, not assumed from the other
+branches' package lists.
+
+## Alpine/musl compatibility
+
+Alpine uses musl libc, not glibc — most of `main`/`notebook`/`wsl`'s dependencies don't care (Neovim,
+git, zsh, tmux, ripgrep, fd, Go, Node.js, Python all have proper musl-native Alpine packages), but
+two things in the Neovim stack specifically ship **glibc-linked** binaries by default and needed a
+different install path:
+
+- **`tree-sitter-cli`** — the npm package's prebuilt binary is glibc-linked and won't run under
+  musl. Alpine packages it natively (`apk add tree-sitter-cli`), so the Dockerfile uses that instead
+  of the `npm install -g tree-sitter-cli` the other branches' READMEs mention.
+- **`lua-language-server`** (Mason-installed, via `lua_ls`) — this one turned out fine on closer
+  inspection: Mason's registry entry for it *does* publish a `linux_x64_musl` asset (confirmed
+  directly against `mason-registry/packages/lua-language-server/package.yaml`), so Mason's own
+  platform detection picks the right binary automatically. No special handling needed — this is
+  called out because it's a commonly-reported Alpine/Mason issue for *other* architectures
+  (`aarch64` lacks a musl asset), so it's worth knowing it's specifically an x86_64 non-issue here.
+- **`gcompat`** — installed as a blanket safety net for anything else Mason might resolve to a
+  glibc binary (candidates: `stylua`, `ruff` — both ship prebuilt GitHub-release binaries whose
+  exact musl/glibc asset matrix wasn't independently verified the way `lua_ls`'s was). Costs about
+  2MB; if everything above already has a musl-native path, it's simply unused.
+- **`gopls`/`goimports`** — no musl concern at all: Mason builds these via `go install`, which by
+  default produces a static binary with no libc dependency either way.
+- The 5 npm-based LSP servers (`html`, `cssls`, `emmet_ls`, `ts_ls`, `pyright`) and 3
+  npm-based formatters/linters (`prettierd`, `prettier`, `eslint_d`) run through `node`, so they're
+  libc-agnostic as long as Node itself works — which Alpine's own `nodejs`/`npm` packages do,
+  natively, extremely well-trodden (`node:alpine` is one of the most-used Docker base images that
+  exists).
+- **LaTeX (`vimtex`) is not wired up** — `zathura` and a LaTeX distribution aren't installed. Not an
+  Alpine-specific issue, just not part of this environment's scope (see the table above).
+
+If a future `minimal-neovim` plugin/tool turns out to need something not covered above, the fix is
+almost always "check if Alpine packages it natively first, fall back to `gcompat` only if not."
+
+## Persistence & host integration
+
+| What | How | Why |
+|---|---|---|
+| Your project files | `-v "$(pwd):/workspace"` | Bind mount — edits happen on the host filesystem, the container is disposable. |
+| `~/.ssh` | `-v "$HOME/.ssh:/home/dev/.ssh:ro"`, read-only | `git push`/SSH auth work without ever copying a private key into the image. |
+| `~/.gitconfig` | `-v "$HOME/.gitconfig:/home/dev/.gitconfig:ro"`, read-only | Commits get your real identity without reconfiguring it every container. |
+| Neovim plugin/LSP state | 3 named volumes (`dotfiles-nvim-data`/`-cache`/`-state`) | The image already ships everything pre-installed — these just mean anything you add *interactively* in one session (`:MasonInstall` something extra) survives to the next container **on that same machine**. Docker seeds a named volume from the image's own directory contents the first time it's mounted, so this doesn't undo the pre-baking. |
+| File ownership | `entrypoint.sh` remaps the container's `dev` user to `HOST_UID`/`HOST_GID` via `usermod`/`groupmod`, then `su-exec dev` | Without this, anything the container writes to `/workspace` would show up **root-owned** on the host the moment the container's internal UID doesn't match yours. `./dev` passes your real `id -u`/`id -g` in automatically. |
+
+The container never runs as root for anything you do — `entrypoint.sh` starts as root only long
+enough to do the UID/GID remap, then drops privileges and `exec`s your shell/command as `dev`.
+
+## Updating
+
+The image doesn't rebuild itself when you change local files — it's built by
+[`.github/workflows/docker-build.yml`](.github/workflows/docker-build.yml) and pushed to
+`ghcr.io/gustavommcv/dotfiles-docker-alpine`, triggered by:
+
+- a push to this branch touching `Dockerfile`, `entrypoint.sh`, `dev`, `zsh/.zshrc`, or
+  `tmux/.tmux.conf`;
+- a weekly cron (Mondays), so the image periodically re-pulls `minimal-neovim@main` even when
+  nothing in *this* repo changed;
+- manually, via the Actions tab (`workflow_dispatch`).
+
+Tags: `latest` (always the most recent successful build) and `<git-sha>` (immutable — pin to one if
+you need to roll back: `DOTFILES_IMAGE=ghcr.io/gustavommcv/dotfiles-docker-alpine:abc1234 ./dev`).
+`./dev` uses whatever's cached locally by default — pass `--pull` to force a fresh pull, or
+`--build` to build from your own local `Dockerfile` instead (useful while testing changes to this
+branch itself before pushing).
 
 ## Structure
 
-| Repo path | Target | Notes |
-|---|---|---|
-| `zsh/.zshrc` | `~/.zshrc` | Shell config — same as main/notebook, no GUI dependency |
-| `tmux/.tmux.conf` | `~/.tmux.conf` | Terminal multiplexer — same as main/notebook |
-| `scripts/` | `~/.config/scripts/` | `toggle-mic.sh` (pactl/paplay only — works over WSLg's PulseAudio-compatible socket) + its two audio cues |
-| `wsl/` | `~/.config/wsl/` (reference copy) | `wsl.conf` and `.wslconfig` — see below, both need a manual copy to their *real* location too |
-| `LICENSE`, `CHANGELOG.md` | — | Not deployed, just repo metadata |
+| Repo path | Role |
+|---|---|
+| [`Dockerfile`](Dockerfile) | Builds the image: system packages, non-root user, dotfiles, Oh My Zsh, `minimal-neovim` clone + full headless bootstrap (Lazy/Mason/Treesitter). |
+| [`entrypoint.sh`](entrypoint.sh) | Container-start UID/GID remap + privilege drop, described above. |
+| [`dev`](dev) | Host-side launcher script — the primary way to use this branch. |
+| `zsh/.zshrc`, `tmux/.tmux.conf` | Same role as on `main`/`notebook`/`wsl`, copied (not symlinked — there's no persistent `~/dotfiles` checkout inside the running container) into the image at build time. |
+| `.github/workflows/docker-build.yml` | CI: builds and pushes the image to GHCR. |
 
-## Editor
+## What's verified vs. what CI verifies
 
-Neovim isn't tracked in this repo — `install.sh` clones the config from its own repo,
-[minimal-neovim](https://github.com/gustavommcv/minimal-neovim), into `~/.config/nvim`, along with
-`neovim`, `ripgrep`, `tree-sitter-cli`, `unzip`, `nodejs`/`npm`, and `go` (`gcc` is already covered
-by `base-devel`, listed above). Same reasoning as `main`/`notebook`: kept separate so the editor
-config can be versioned and updated on its own, and only clones if `~/.config/nvim` doesn't already
-exist. Purely terminal-based, so it needs nothing WSL-specific to work — confirmed working under
-WSL by the config's own docs.
+This branch was built and reviewed without a local Docker daemon available — everything below was
+checked as rigorously as possible without actually running it:
+
+- `dev` and `entrypoint.sh` — syntax-validated (`bash -n` / `sh -n`), logic traced by hand.
+- Every `apk`/Mason/npm package name — cross-checked against Alpine's package index and, for the
+  trickier ones, the actual `mason-registry` `package.yaml` source (not memory) — see
+  [Alpine/musl compatibility](#alpinemusl-compatibility) above for what that turned up.
+- The headless bootstrap commands (`Lazy! sync`, `MasonInstall`, `MasonToolsInstallSync`,
+  `nvim-treesitter`'s `:wait()`) — each chosen because it's *documented* to block until done, not
+  guessed. This is the least testable part of the Dockerfile: whether it actually completes cleanly
+  in a real Alpine container can only be confirmed by an actual `docker build`, which is exactly what
+  the first CI run does. If it fails, `Actions` → the failed run's log will show which step; that's
+  the fastest path to a fix, faster than trying to fully simulate Docker locally.
+- What CI *doesn't* cover: `arm64` (workflow only builds the default `amd64` runner architecture —
+  see the Dockerfile's own note on this), and the actual UID/GID remap + bind-mount behavior in
+  `entrypoint.sh`/`dev`, which needs a real `docker run` on a real machine with a real `$HOME` to
+  exercise meaningfully.
 
 ## What's not here (and why)
 
-Everything below exists on `main`/`notebook` to serve a Wayland compositor that doesn't exist in
-WSL2 — WSLg provides GUI passthrough to the Windows host directly, so none of it has a role to play:
+Same reasoning as `wsl`, one step further — there isn't even a host display server passthrough
+(WSLg) to consider, since this is a plain Linux container:
 
 | Removed | Reason |
 |---|---|
-| `hypr/` (Hyprland, hypridle, hyprlock, hyprshot, hyprpicker, hyprpolkitagent) | No Wayland compositor in WSL2 — Windows is the compositor via WSLg. |
-| `waybar/` | Status bar reads Hyprland's IPC socket; meaningless without Hyprland. |
-| `rofi/` | GUI launcher depends on a running compositor; use the Windows Start menu or a terminal launcher instead. |
-| `foot/` | Wayland-only terminal; use Windows Terminal, WezTerm, or any GUI terminal via WSLg. |
-| `MangoHud/` | Vulkan/OpenGL performance overlay — no native GPU games run inside the WSL guest. |
-| `xdg-desktop-portal-hyprland`, `xdg-desktop-portal-gtk` | Portals broker access to the host's screen/files for sandboxed apps; WSL has no sandboxing story that needs them, and the Arch Wiki explicitly recommends skipping `xdg-desktop-portal-gtk` here (heavy, unnecessary dependency chain). |
-| `greetd`/`greetd-tuigreet`, `ly` | No login manager — Windows starts the WSL session directly. |
-| `swaync`, `swayosd` | Notification daemon and on-screen-display both require a Wayland compositor to render layer-shell surfaces into. |
-| `bluetui` + `bluetooth-wrapper.sh` | Bluetooth hardware is owned and managed by Windows, not passed through to the WSL guest. |
-| `clipse`, `wl-clip-persist` | WSL already bridges the clipboard with Windows natively; a Wayland clipboard history manager has nothing to listen to. |
-| `aylurs-gtk-shell` (AGS) | GTK widget shell rendered by a compositor that isn't running here. |
-| `wttrbar` | Weather module for Waybar, which is gone. |
-| `toggle-menu.sh`, `refresh-waybar.sh` | Controlled Rofi/Waybar specifically — nothing left for them to control. |
-
-`toggle-mic.sh` is the one script that survived: it only calls `pactl`/`paplay`, and WSLg exposes a
-PulseAudio-compatible socket, so it still works. It moved to `scripts/` since `hypr/` is gone.
-
-## WSL-specific configs
-
-Two files in [`wsl/`](wsl/) aren't deployed by the usual symlink loop because they don't live
-in `$HOME` on the Linux side at all:
-
-- **[`wsl/wsl.conf`](wsl/wsl.conf)** → `/etc/wsl.conf` inside the guest (root-owned). Enables
-  systemd, sets interop/automount options. Copy with `sudo cp`.
-- **[`wsl/.wslconfig`](wsl/.wslconfig)** → `%USERPROFILE%\.wslconfig` on the **Windows** side.
-  Optional, global to every WSL2 distro on the machine (not just this one) — memory/processor
-  limits, WSLg GPU passthrough. Left fully commented out; uncomment only values you've decided
-  on for your own hardware.
-
-`install.sh` still symlinks `wsl/` into `~/.config/wsl/` for convenient reference/editing, but
-that symlink is not what WSL/Windows actually read from — the manual copies above are what takes
-effect.
+| `hypr/`, `waybar/`, `rofi/`, `foot/`, `MangoHud/` | No compositor at all inside a container — same as `wsl`, minus WSLg. |
+| `install.sh` | Replaced by the `Dockerfile` — installation now happens once, at image build time, not per-machine. |
+| `scripts/` (`toggle-mic.sh` + audio cues) | No audio device inside a container — `wsl` kept this because WSLg passes through a PulseAudio-compatible socket; plain Docker has nothing equivalent. |
+| `wsl/` (`wsl.conf`, `.wslconfig`) | WSL-specific, not applicable to any other environment. |
+| `greetd`/`ly`, `xdg-desktop-portal-*`, `swaync`/`swayosd`, `bluetui`, `clipse`/`wl-clip-persist`, AGS | All GUI/session-manager concerns — never applicable to a container, same as `wsl`. |
