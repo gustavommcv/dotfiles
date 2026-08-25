@@ -32,7 +32,7 @@ jobs:
     # burning Actions minutes indefinitely if that's ever hit.
     timeout-minutes: 30
     permissions:
-      contents: read
+      contents: write
       packages: write
     steps:
       - uses: actions/checkout@v4
@@ -50,10 +50,12 @@ jobs:
 
       # Deliberately not docker/build-push-action here: its own step logs need
       # a signed-in GitHub session to view (annotations only surface the
-      # failing command, not its output). Building via plain `docker buildx
-      # build --progress=plain` and teeing to a file lets the log-on-failure
-      # step below publish full build output to the run's Summary tab, which
-      # *is* visible without signing in.
+      # failing command, not its output — and $GITHUB_STEP_SUMMARY turns out
+      # to need sign-in too, confirmed by testing it, despite docs suggesting
+      # otherwise for public repos). Building via plain `docker buildx build
+      # --progress=plain` and teeing to a file lets the final step below push
+      # the raw log to a plain git branch instead, readable with an ordinary
+      # `git fetch` — no GitHub session needed at all.
       - name: Build (full log captured either way)
         id: build
         run: |
@@ -104,4 +106,27 @@ jobs:
             echo "--- Treesitter parsers on disk ---"
             docker run --rm "$IMAGE:build" find /home/dev/.local/share/nvim -maxdepth 3 -iname "parser" -exec ls -1 {} \;
             echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+          } | tee verify.log >> "$GITHUB_STEP_SUMMARY"
+
+      # Self-service diagnostics: push build.log (and verify.log, if that step
+      # ran) to a disposable branch, readable with a plain `git fetch` — no
+      # GitHub session needed, unlike step logs/annotations/$GITHUB_STEP_SUMMARY
+      # (all three confirmed to require sign-in even on this public repo).
+      # Force-pushed fresh each run on purpose: this is throwaway debug output,
+      # not history worth keeping.
+      - name: Push debug logs to ci-debug-log branch
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout --orphan ci-debug-log
+          git rm -rf . >/dev/null 2>&1 || true
+          {
+            echo "# CI debug log — run ${{ github.run_id }}, commit ${{ steps.meta.outputs.sha_short }}"
+            echo "Force-pushed fresh on every run — not real history."
+          } > NOTES.md
+          git add NOTES.md
+          [ -f build.log ] && cp build.log build.log.txt && git add build.log.txt
+          [ -f verify.log ] && cp verify.log verify.log.txt && git add verify.log.txt
+          git commit -m "CI debug log for run ${{ github.run_id }}"
+          git push origin HEAD:ci-debug-log --force
