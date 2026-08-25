@@ -48,12 +48,60 @@ jobs:
       - id: meta
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
-      - uses: docker/build-push-action@v6
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ steps.meta.outputs.sha_short }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+      # Deliberately not docker/build-push-action here: its own step logs need
+      # a signed-in GitHub session to view (annotations only surface the
+      # failing command, not its output). Building via plain `docker buildx
+      # build --progress=plain` and teeing to a file lets the log-on-failure
+      # step below publish full build output to the run's Summary tab, which
+      # *is* visible without signing in.
+      - name: Build (full log captured either way)
+        id: build
+        run: |
+          set -o pipefail
+          docker buildx build \
+            --progress=plain \
+            --load \
+            -t "$IMAGE:build" \
+            --cache-from "type=gha" \
+            --cache-to "type=gha,mode=max" \
+            . 2>&1 | tee build.log
+
+      - name: Publish build log to the run summary (always, not just on failure)
+        if: always()
+        run: |
+          {
+            echo "## Docker build log"
+            echo '```'
+            tail -c 60000 build.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Push
+        run: |
+          docker tag "$IMAGE:build" "$IMAGE:latest"
+          docker tag "$IMAGE:build" "$IMAGE:${{ steps.meta.outputs.sha_short }}"
+          docker push "$IMAGE:latest"
+          docker push "$IMAGE:${{ steps.meta.outputs.sha_short }}"
+
+      # Informational only (continue-on-error: true) — a bug in this diagnostic
+      # script itself must never block an otherwise-good push above. Filesystem
+      # checks (ls, not Lua-API introspection) so this doesn't depend on
+      # guessing internal field/method names for lazy.nvim/mason/treesitter.
+      - name: Verify Neovim environment inside the built image
+        continue-on-error: true
+        run: |
+          {
+            echo "## Environment verification"
+            echo '```'
+            docker run --rm "$IMAGE:build" nvim --version | head -n1
+            echo
+            echo "--- Lazy plugins on disk (~/.local/share/nvim/lazy/) ---"
+            docker run --rm "$IMAGE:build" ls -1 /home/dev/.local/share/nvim/lazy/
+            echo
+            echo "--- Mason-installed binaries (~/.local/share/nvim/mason/bin/) ---"
+            docker run --rm "$IMAGE:build" ls -1 /home/dev/.local/share/nvim/mason/bin/
+            echo
+            echo "--- Treesitter parsers on disk ---"
+            docker run --rm "$IMAGE:build" find /home/dev/.local/share/nvim -maxdepth 3 -iname "parser" -exec ls -1 {} \;
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
