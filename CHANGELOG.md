@@ -8,6 +8,9 @@ forked from `main` on 2026-08-05, long after `main`/`notebook` split). Entries b
 
 ## main
 
+- **2026-08-06** — `install.sh` now clones and installs [minimal-neovim](https://github.com/gustavommcv/minimal-neovim)
+  (own repo, not vendored here) into `~/.config/nvim`, plus its dependencies
+  (`neovim`, `ripgrep`, `tree-sitter-cli`, `unzip`, `gcc`, `nodejs`, `npm`).
 - **2026-08-05** — Filled in the actual repo URL in the README clone instructions.
 - **2026-08-05** — Replaced `ly` with `greetd`/`greetd-tuigreet` as the login manager.
 - **2026-08-05** — Unified the mic-mute hardware key with `Alt+M`: both now route through
@@ -35,6 +38,9 @@ forked from `main` on 2026-08-05, long after `main`/`notebook` split). Entries b
 
 ## notebook
 
+- **2026-08-06** — `install.sh` now clones and installs [minimal-neovim](https://github.com/gustavommcv/minimal-neovim)
+  (own repo, not vendored here) into `~/.config/nvim`, plus its dependencies
+  (`neovim`, `ripgrep`, `tree-sitter-cli`, `unzip`, `gcc`, `nodejs`, `npm`).
 - **2026-08-05** — Filled in the actual repo URL in the README clone instructions.
 - **2026-08-05** — Replaced `ly` with `greetd`/`greetd-tuigreet` as the login manager.
 - **2026-08-05** — Backported the expanded root `README.md`, `CHANGELOG.md`, and the `waybar/README.md`
