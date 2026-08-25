@@ -84,6 +84,16 @@ PowerShell (not just closing the terminal window), then reopen your distro.
 | `wsl/` | `~/.config/wsl/` (reference copy) | `wsl.conf` and `.wslconfig` — see below, both need a manual copy to their *real* location too |
 | `LICENSE`, `CHANGELOG.md` | — | Not deployed, just repo metadata |
 
+## Editor
+
+Neovim isn't tracked in this repo — `install.sh` clones the config from its own repo,
+[minimal-neovim](https://github.com/gustavommcv/minimal-neovim), into `~/.config/nvim`, along with
+`neovim`, `ripgrep`, `tree-sitter-cli`, `unzip`, `nodejs`/`npm`, and `go` (`gcc` is already covered
+by `base-devel`, listed above). Same reasoning as `main`/`notebook`: kept separate so the editor
+config can be versioned and updated on its own, and only clones if `~/.config/nvim` doesn't already
+exist. Purely terminal-based, so it needs nothing WSL-specific to work — confirmed working under
+WSL by the config's own docs.
+
 ## What's not here (and why)
 
 Everything below exists on `main`/`notebook` to serve a Wayland compositor that doesn't exist in

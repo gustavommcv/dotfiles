@@ -29,6 +29,13 @@ PACKAGES=(
     # Clipboard integration for any GUI app launched through WSLg
     wl-clipboard
 
+    # Neovim (config cloned separately below, from its own repo) + its
+    # dependencies. gcc comes from base-devel above, already covering the C
+    # compiler requirement; go, nodejs and npm still need to be listed
+    # explicitly for gopls/goimports and several Mason-installed LSP
+    # servers/formatters.
+    neovim ripgrep tree-sitter-cli unzip nodejs npm go
+
     # Fonts
     ttf-jetbrains-mono-nerd
 )
@@ -55,6 +62,18 @@ current_shell="$(getent passwd "$USER" | cut -d: -f7)"
 if [ "$current_shell" != "$zsh_path" ]; then
     echo "Setting zsh as your login shell (you'll be prompted for your password)..."
     chsh -s "$zsh_path"
+fi
+
+# Neovim config lives in its own repo (not this one) so it can be versioned and
+# updated independently — see https://github.com/gustavommcv/minimal-neovim.
+# Only clone if absent, so this script never overwrites local edits or an
+# in-progress `:Lazy sync`.
+NVIM_CONFIG_DIR="$HOME/.config/nvim"
+if [ ! -d "$NVIM_CONFIG_DIR" ]; then
+    echo "Cloning minimal-neovim config..."
+    git clone https://github.com/gustavommcv/minimal-neovim.git "$NVIM_CONFIG_DIR"
+else
+    echo "$NVIM_CONFIG_DIR already exists, skipping clone (update manually with git -C \"$NVIM_CONFIG_DIR\" pull)."
 fi
 
 cat <<'EOF'

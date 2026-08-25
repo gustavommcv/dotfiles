@@ -2,6 +2,10 @@
 
 ## wsl
 
+- **2026-08-06** — `install.sh` now clones and installs [minimal-neovim](https://github.com/gustavommcv/minimal-neovim)
+  (own repo, not vendored here) into `~/.config/nvim`, plus its dependencies
+  (`neovim`, `ripgrep`, `tree-sitter-cli`, `unzip`, `nodejs`, `npm`, `go` — `gcc` was
+  already covered by `base-devel`).
 - **2026-08-05** — Documented `KEEP_ZSHRC=yes` as required on the Oh My Zsh install command — without
   it, the installer clobbers the `.zshrc` symlink `install.sh` already put in place with its own
   template; added the recovery command for anyone who already hit this.
