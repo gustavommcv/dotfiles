@@ -36,9 +36,17 @@ LABEL org.opencontainers.image.source="https://github.com/gustavommcv/dotfiles" 
 #     hardcode `#!/bin/bash`; Alpine's default shell is busybox ash, not bash.
 #   - shadow: Alpine's busybox usermod can't change an existing user's UID/GID —
 #     needed by entrypoint.sh's host UID/GID remap.
+#   - wget: confirmed the actual cause of the first real build failure — Mason
+#     downloads at least some GitHub-release assets with `wget` specifically,
+#     not `curl` (which was already in the list and didn't help). Without it:
+#     "Package lua-language-server failed... spawn: wget failed with exit
+#     code 1... Failed to download ...linux-x64-musl.tar.gz" — note it had
+#     already correctly picked the musl asset; the download tool was what was
+#     missing, not a libc mismatch. Likely affects texlab/stylua/ruff the same
+#     way, since they're installed the same way (GitHub release binary).
 RUN apk add --no-cache \
         # Essential
-        bash git openssh-client zsh tmux curl ca-certificates \
+        bash git openssh-client zsh tmux curl wget ca-certificates \
         ripgrep fd tree-sitter-cli unzip neovim \
         su-exec shadow gcompat \
         # Development (languages the default Neovim config supports out of the box)
