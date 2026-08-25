@@ -48,13 +48,21 @@ LABEL org.opencontainers.image.source="https://github.com/gustavommcv/dotfiles" 
 #     installs fail with "spawn: wget failed" before ever reaching the actual
 #     HTTP response, which is what the lua-language-server 404 above needed
 #     `wget` present to even reveal.
+#   - gzip: found by a real `:checkhealth` run on the built image — Alpine's
+#     default `gzip` is a busybox applet that doesn't even understand
+#     `--version` ("gzip: unrecognized option"), which mason.nvim's own
+#     healthcheck flags as a hard error. Real GNU gzip from apk fixes it.
 RUN apk add --no-cache \
         # Essential
         bash git openssh-client zsh tmux curl wget ca-certificates \
-        ripgrep fd tree-sitter-cli unzip neovim lua-language-server \
+        ripgrep fd tree-sitter-cli unzip gzip neovim lua-language-server \
         su-exec shadow gcompat \
-        # Development (languages the default Neovim config supports out of the box)
-        nodejs npm go python3 build-base
+        # Development (languages the default Neovim config supports out of the box).
+        # py3-pip specifically: no Mason-managed tool needs it (ruff ships as a
+        # binary, not a pip package — see the musl-compat note above), but a
+        # Python "development" environment that can't `pip install` isn't much
+        # of one — also flagged as missing by :checkhealth.
+        nodejs npm go python3 py3-pip build-base
 
 # --- Non-root user ---------------------------------------------------------
 # Fixed UID/GID at build time; entrypoint.sh remaps both to match the host user
