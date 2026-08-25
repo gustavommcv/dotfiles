@@ -55,6 +55,16 @@ no manual linking needed. For reference, this is what it links:
 - **[Zsh](zsh/)**: Shell configuration.
 - **[MangoHud](MangoHud/)** *(main only)*: Vulkan/OpenGL performance overlay for gaming.
 
+## Editor
+
+Neovim isn't tracked in this repo — `install.sh` clones the config from its own repo,
+[minimal-neovim](https://github.com/gustavommcv/minimal-neovim), into `~/.config/nvim`, along
+with `neovim`, `ripgrep`, `tree-sitter-cli`, `unzip`, `gcc`, and `nodejs`/`npm` (needed for several
+LSP servers/formatters regardless of `nvm`, since Neovim spawns them outside any login shell).
+Kept separate so the editor config can be versioned and updated on its own; see that repo for
+plugins, keymaps, and full dependency docs. Only clones if `~/.config/nvim` doesn't already
+exist — re-running `install.sh` never overwrites local edits there.
+
 ## Key Features
 
 - **Hyprland Window Manager**: A dynamic tiling window manager with fluid animations.
