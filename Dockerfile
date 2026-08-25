@@ -33,7 +33,7 @@ LABEL org.opencontainers.image.source="https://github.com/gustavommcv/dotfiles" 
 #     publishes linux-x64/linux-arm64 (glibc) tarballs — confirmed with a
 #     direct curl against the exact URL Mason requests: 404. Registry
 #     metadata can drift from what's actually published upstream; apk's
-#     native package sidesteps the whole question. See the [2/4] MasonInstall
+#     native package sidesteps the whole question. See the [2/3] MasonInstall
 #     layer below for how this is wired up (or rather, deliberately isn't).
 #   - gcompat is a small safety net for any other Mason-downloaded binary that
 #     turns out to be glibc-linked (gopls/goimports are static Go binaries and
@@ -87,22 +87,41 @@ RUN git clone --branch "$NVIM_CONFIG_REF" --depth 1 \
         https://github.com/gustavommcv/minimal-neovim.git "$HOME/.config/nvim"
 
 # --- Bake plugins, LSP servers/formatters/linters, and treesitter parsers ---
-# Split into 4 separate RUN layers deliberately (not chained with &&): if one
-# fails, the build log/CI annotation points at that exact step instead of a
-# 4-command blob, and each layer is independently cacheable. Each command was
-# chosen specifically because it's documented to block until done — the plain
-# async forms (:MasonInstall via vim.cmd(), :MasonToolsInstall,
-# ts.install() without :wait()) return before their background jobs finish,
-# which would silently ship a half-installed image. `echo` markers below and
-# a trailing `:messages` dump make each layer's own log self-explanatory even
-# without re-deriving which nvim invocation is running.
+# 3 separate RUN layers (not chained with &&): if one fails, the build log
+# points at that exact step instead of a multi-command blob, and each layer
+# is independently cacheable. `echo` markers and a trailing `:messages` dump
+# make each layer's own log self-explanatory on its own.
+#
+# Lazy sync and the Treesitter wait are deliberately in the SAME nvim
+# invocation (step 1), not separate ones — found out why the hard way: an
+# earlier version ran them as separate RUN layers, on the assumption that
+# nvim-treesitter's own `build = ":TSUpdate"` hook (triggered as a side
+# effect of `:Lazy! sync` loading treesitter.lua's `config` function, which
+# calls `ts.install(parsers)` unconditionally on every startup) would finish
+# compiling before `:Lazy! sync` returned, and that a later explicit
+# `:wait()` call was just belt-and-suspenders. It wasn't: `:Lazy! sync`
+# blocks for the plugin-install phase only, not for that hook's own
+# background compile jobs — the larger grammars (vim/bash/cpp/tsx/
+# typescript) were still mid-compile when `:qa` killed the process,
+# leaving `~/.cache/nvim/tree-sitter-*/parser.so` half-written. Every
+# subsequent nvim invocation's `ts.install()` call saw that half-built
+# state, treated it as "already in progress", and failed near-instantly
+# (~15ms, nowhere near real compile time) with "Dynamic library ... not
+# found after build attempt" instead of doing a clean rebuild — a real CI
+# run reproduced this 3 times in a row before the actual mechanism was
+# clear from timing alone. Keeping both calls in one un-interruptible
+# invocation, with the same 19-parser list `treesitter.lua`'s own `parsers`
+# table declares, is what actually avoids the race.
 
-# 1) Plugins. Bootstraps lazy.nvim itself (see lua/config/lazy.lua), then
-# installs every plugin. `:Lazy! sync` blocks in headless mode. This also
-# runs nvim-treesitter's own `build = ":TSUpdate"` hook as a side effect —
-# step 4 below re-confirms with an explicit :wait() as belt-and-suspenders.
-RUN echo "=== [1/4] Lazy! sync ===" \
-    && nvim --headless "+Lazy! sync" -c "messages" -c "qa"
+# 1) Plugins + Treesitter parsers.
+RUN echo "=== [1/3] Lazy! sync + Treesitter parsers ===" \
+    && nvim --headless "+Lazy! sync" \
+        -c "lua require('nvim-treesitter').install({ \
+                'lua','vim','vimdoc','query','markdown','markdown_inline', \
+                'javascript','typescript','tsx','html','css','json','yaml', \
+                'bash','python','go','c','cpp','latex' \
+            }):wait(300000)" \
+        -c "messages" -c "qa"
 
 # 2) LSP servers. `mason-lspconfig`'s own `ensure_installed` (mason.lua's
 # `lsp_servers` table) is what actually triggers Mason installs on Lazy sync,
@@ -126,26 +145,15 @@ RUN echo "=== [1/4] Lazy! sync ===" \
 # vim.lsp.enable("lua_ls") resolves `cmd = {"lua-language-server"}` via
 # $PATH regardless of whether Mason "installed" it, so the apk package
 # satisfies it exactly the same way.
-RUN echo "=== [2/4] MasonInstall (LSP servers) ===" \
+RUN echo "=== [2/3] MasonInstall (LSP servers) ===" \
     && nvim --headless \
         -c "MasonInstall gopls html-lsp css-lsp emmet-ls typescript-language-server texlab pyright" \
         -c "messages" -c "qa"
 
 # 3) Formatters/linters. Separate plugin (mason-tool-installer.nvim), separate
 # ensure_installed list, separate documented-blocking command.
-RUN echo "=== [3/4] MasonToolsInstallSync (formatters/linters) ===" \
+RUN echo "=== [3/3] MasonToolsInstallSync (formatters/linters) ===" \
     && nvim --headless "+MasonToolsInstallSync" -c "messages" -c "qa"
-
-# 4) Treesitter parsers. require('nvim-treesitter').install(...):wait(ms) is
-# nvim-treesitter's own documented pattern for synchronous installs in a
-# script/CI context. List mirrors lua/plugins/treesitter.lua's `parsers`
-# table exactly — keep the two in sync if that file changes upstream.
-RUN echo "=== [4/4] Treesitter parsers ===" \
-    && nvim --headless -c "lua require('nvim-treesitter').install({ \
-            'lua','vim','vimdoc','query','markdown','markdown_inline', \
-            'javascript','typescript','tsx','html','css','json','yaml', \
-            'bash','python','go','c','cpp','latex' \
-        }):wait(300000)" -c "messages" -c "qa"
 
 # --- Entrypoint --------------------------------------------------------------
 # Back to root: the container must START as root so entrypoint.sh can remap the
