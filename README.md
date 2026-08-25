@@ -64,14 +64,15 @@ time (see [Updating](#updating)).
 
 | Category | Packages | Why |
 |---|---|---|
-| **Essential** | `neovim` `git` `openssh-client` `zsh` `tmux` `bash` `curl` `ca-certificates` `ripgrep` `fd` `unzip` | Editor, VCS, shell, and what Telescope/Mason need to function at all. `bash` matters even though the shell is zsh — several npm postinstall scripts and the Oh My Zsh installer hardcode `#!/bin/bash`, which doesn't exist on a stock Alpine image. |
-| **musl compat** | `tree-sitter-cli` `gcompat` `shadow` `su-exec` | See [Alpine/musl compatibility](#alpinemusl-compatibility) below — these exist specifically because this is Alpine, not Arch. |
+| **Essential** | `neovim` `git` `openssh-client` `zsh` `tmux` `bash` `curl` `wget` `ca-certificates` `ripgrep` `fd` `unzip` | Editor, VCS, shell, and what Telescope/Mason need to function at all. `bash` matters even though the shell is zsh — several npm postinstall scripts and the Oh My Zsh installer hardcode `#!/bin/bash`, which doesn't exist on a stock Alpine image. `wget` matters because Mason downloads at least some GitHub-release assets with it specifically, not `curl` — confirmed by the build failing without it, not assumed. |
+| **musl compat** | `tree-sitter-cli` `lua-language-server` `gcompat` `shadow` `su-exec` | See [Alpine/musl compatibility](#alpinemusl-compatibility) below — these exist specifically because this is Alpine, not Arch. |
 | **Development** | `nodejs` `npm` `go` `python3` `build-base` | What `minimal-neovim`'s 8 default LSP servers need to run (5 are npm packages, `gopls`/`goimports` need Go only at install time, `build-base` compiles Treesitter parsers) — see that repo's own README for the exact breakdown. |
 | **Not included** | `texlive`, `zathura`, `arduino-cli`, `clangd` | LaTeX and Arduino support are opt-in even in `minimal-neovim` itself (see its docs) — no reason to bake them into a generic image. Add with a plain `apk add` inside a running container if you ever need them for one session; they won't persist across containers unless you rebuild the image with them added. |
 
-Nothing here is a guess — every package above was checked against what the pinned `minimal-neovim`
-commit's `lua/plugins/mason.lua` and `treesitter.lua` actually declare, not assumed from the other
-branches' package lists.
+Every package above was checked against what the pinned `minimal-neovim` commit's
+`lua/plugins/mason.lua` and `treesitter.lua` actually declare — and two of them (`wget`,
+`lua-language-server`) were found by actually running the build in CI and reading the failure, not
+by reading docs. See [What's verified vs. what CI verifies](#whats-verified-vs-what-ci-verifies).
 
 ## Alpine/musl compatibility
 
@@ -83,12 +84,16 @@ different install path:
 - **`tree-sitter-cli`** — the npm package's prebuilt binary is glibc-linked and won't run under
   musl. Alpine packages it natively (`apk add tree-sitter-cli`), so the Dockerfile uses that instead
   of the `npm install -g tree-sitter-cli` the other branches' READMEs mention.
-- **`lua-language-server`** (Mason-installed, via `lua_ls`) — this one turned out fine on closer
-  inspection: Mason's registry entry for it *does* publish a `linux_x64_musl` asset (confirmed
-  directly against `mason-registry/packages/lua-language-server/package.yaml`), so Mason's own
-  platform detection picks the right binary automatically. No special handling needed — this is
-  called out because it's a commonly-reported Alpine/Mason issue for *other* architectures
-  (`aarch64` lacks a musl asset), so it's worth knowing it's specifically an x86_64 non-issue here.
+- **`lua-language-server`** — installed via `apk` instead of Mason, and this one has a real story:
+  mason-registry's `package.yaml` *declares* a `linux_x64_musl` asset for it, which looked like
+  reason enough to trust Mason's own platform detection and skip special-casing it. Running the
+  actual build proved that wrong — the upstream 3.19.1 release currently only publishes
+  `linux-x64`/`linux-arm64` (glibc) tarballs, no `-musl` variant, so `MasonInstall` failed with a
+  literal 404 against the exact URL it requested (reproduced independently with a plain `curl`
+  against that URL). Registry metadata can drift from what's actually published upstream; this is
+  now excluded from the `MasonInstall` list in the Dockerfile and satisfied by Alpine's native
+  package instead — `vim.lsp.enable("lua_ls")` resolves `cmd = {"lua-language-server"}` via `$PATH`
+  regardless of whether Mason "installed" it, so this works identically from Neovim's perspective.
 - **`gcompat`** — installed as a blanket safety net for anything else Mason might resolve to a
   glibc binary (candidates: `stylua`, `ruff` — both ship prebuilt GitHub-release binaries whose
   exact musl/glibc asset matrix wasn't independently verified the way `lua_ls`'s was). Costs about

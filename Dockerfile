@@ -24,30 +24,34 @@ LABEL org.opencontainers.image.source="https://github.com/gustavommcv/dotfiles" 
 # Essential: base shell/editor/vcs stack, always needed regardless of language.
 # Development: what minimal-neovim's default 8 LSP servers + treesitter parsers
 #   need to actually run (see its README's "Languages supported out of the box").
-# Compat: musl vs. the mostly-glibc world Mason/npm binaries assume.
-#   - tree-sitter-cli and (as a fallback path) lua-language-server ship glibc-linked
-#     binaries via npm/Mason; Alpine packages both natively for musl, so apk wins
-#     over letting Mason/npm try to fetch their own.
+# Compat: musl vs. the mostly-glibc world Mason/npm binaries assume, plus two
+#   things found only by actually running this (not by reading docs):
+#   - tree-sitter-cli ships a glibc-linked binary via npm; Alpine packages it
+#     natively for musl, so apk wins over letting npm fetch its own.
+#   - lua-language-server: mason-registry's package.yaml *declares* a
+#     linux_x64_musl asset, but the upstream 3.19.1 release currently only
+#     publishes linux-x64/linux-arm64 (glibc) tarballs — confirmed with a
+#     direct curl against the exact URL Mason requests: 404. Registry
+#     metadata can drift from what's actually published upstream; apk's
+#     native package sidesteps the whole question. See the [2/4] MasonInstall
+#     layer below for how this is wired up (or rather, deliberately isn't).
 #   - gcompat is a small safety net for any other Mason-downloaded binary that
-#     turns out to be glibc-linked (gopls/goimports are static Go binaries and the
-#     npm-based LSP servers run through node either way, so this mainly covers
-#     stylua/ruff if their registry entry ever lacks a musl asset).
-#   - bash: several npm postinstall scripts and installers (including Oh My Zsh's)
-#     hardcode `#!/bin/bash`; Alpine's default shell is busybox ash, not bash.
-#   - shadow: Alpine's busybox usermod can't change an existing user's UID/GID —
-#     needed by entrypoint.sh's host UID/GID remap.
-#   - wget: confirmed the actual cause of the first real build failure — Mason
-#     downloads at least some GitHub-release assets with `wget` specifically,
-#     not `curl` (which was already in the list and didn't help). Without it:
-#     "Package lua-language-server failed... spawn: wget failed with exit
-#     code 1... Failed to download ...linux-x64-musl.tar.gz" — note it had
-#     already correctly picked the musl asset; the download tool was what was
-#     missing, not a libc mismatch. Likely affects texlab/stylua/ruff the same
-#     way, since they're installed the same way (GitHub release binary).
+#     turns out to be glibc-linked (gopls/goimports are static Go binaries and
+#     the npm-based LSP servers run through node either way, so this mainly
+#     covers stylua/ruff if their registry entry has the same drift problem).
+#   - bash: several npm postinstall scripts and installers (including Oh My
+#     Zsh's) hardcode `#!/bin/bash`; Alpine's default shell is busybox ash.
+#   - shadow: Alpine's busybox usermod can't change an existing user's UID/GID
+#     — needed by entrypoint.sh's host UID/GID remap.
+#   - wget: Mason downloads at least some GitHub-release assets with `wget`
+#     specifically, not `curl` (which was already in the list) — without it,
+#     installs fail with "spawn: wget failed" before ever reaching the actual
+#     HTTP response, which is what the lua-language-server 404 above needed
+#     `wget` present to even reveal.
 RUN apk add --no-cache \
         # Essential
         bash git openssh-client zsh tmux curl wget ca-certificates \
-        ripgrep fd tree-sitter-cli unzip neovim \
+        ripgrep fd tree-sitter-cli unzip neovim lua-language-server \
         su-exec shadow gcompat \
         # Development (languages the default Neovim config supports out of the box)
         nodejs npm go python3 build-base
@@ -107,12 +111,24 @@ RUN echo "=== [1/4] Lazy! sync ===" \
 # as a direct `-c` command, which (unlike the same call wrapped in
 # `vim.cmd()`) is documented to block. Names are Mason *package* names, not
 # lspconfig server names — verified against mason-registry's package.yaml
-# `neovim.lspconfig` field, not assumed: lua_ls->lua-language-server,
+# `neovim.lspconfig` field, not assumed: gopls shares its lspconfig name,
 # html->html-lsp, cssls->css-lsp, emmet_ls->emmet-ls, ts_ls->typescript-
-# language-server; gopls/texlab/pyright share their lspconfig name as-is.
+# language-server, texlab/pyright share their lspconfig name as-is.
+#
+# lua-language-server is deliberately NOT in this list, installed via apk
+# instead (see the system-packages layer above) — found by actually running
+# this: mason-registry's package.yaml *declares* a linux_x64_musl asset for
+# it, which is why the earlier musl-compat research trusted Mason to handle
+# it, but the upstream 3.19.1 release currently only publishes
+# lua-language-server-3.19.1-linux-{x64,arm64}.tar.gz (no -musl variant) —
+# confirmed with a direct curl against the exact URL Mason requests, 404.
+# Registry declarations can drift from what's actually published upstream;
+# vim.lsp.enable("lua_ls") resolves `cmd = {"lua-language-server"}` via
+# $PATH regardless of whether Mason "installed" it, so the apk package
+# satisfies it exactly the same way.
 RUN echo "=== [2/4] MasonInstall (LSP servers) ===" \
     && nvim --headless \
-        -c "MasonInstall lua-language-server gopls html-lsp css-lsp emmet-ls typescript-language-server texlab pyright" \
+        -c "MasonInstall gopls html-lsp css-lsp emmet-ls typescript-language-server texlab pyright" \
         -c "messages" -c "qa"
 
 # 3) Formatters/linters. Separate plugin (mason-tool-installer.nvim), separate
